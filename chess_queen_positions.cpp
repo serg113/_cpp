@@ -1,3 +1,7 @@
+/*
+ * task from hackerrank - https://www.hackerrank.com/challenges/queens-attack-2/problem
+ */
+
 #include <iostream>
 #include <vector>
 
