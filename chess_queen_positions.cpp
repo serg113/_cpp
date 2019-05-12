@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <vector>
-
+#include <boost/range/combine.hpp>
 
 typedef std::vector<std::vector<int>> vector_2d;
 
@@ -25,9 +25,9 @@ bool check_position(int pos_h, int pos_v, const vector_2d obstacles, int n)
 	{
 		if(obstacles.size() > 0)
 		{
-			for(auto i = 0; i < obstacles.size(); i++)
+			for(auto obstacle : obstacles)
 			{
-				if(obstacles[i][0] == pos_h && obstacles[i][1] == pos_v)
+				if(obstacle[0] == pos_h && obstacle[1] == pos_v)
 				{
 					go_next = false;
 					break;
@@ -57,24 +57,29 @@ int get_attack_count(int p_h, int p_v, int n, const vector_2d obstacles)
 	{
 		attack_fields.push_back({p_h, p_v, 1}); //last index indicates that obstacle doesnot occur
 	}
-
-	for(auto i = 0; i < 8; i++)
+	
+	for(auto tup : boost::combine(attack_fields, dir))
 	{
+		
+		std::vector<int> attack_dir, d;
+	
+		boost::tie(attack_dir,d) = tup;
+
 		while(true)
 		{
-			if(attack_fields[i][2] < 0)
+			if(attack_dir[2] < 0)
 			{
 				break;
 			}
 
-			if(!check_position(attack_fields[i][0] + dir[i][0], attack_fields[i][1] + dir[i][1], obstacles, n))
+			if(!check_position(attack_dir[0] + d[0], attack_dir[1] + d[1], obstacles, n))
 			{
-				attack_fields[i][2] = -1;
+				attack_dir[2] = -1;
 				break;
 			}
 			
-			attack_fields[i][0] += dir[i][0];
-			attack_fields[i][1] += dir[i][1];
+			attack_dir[0] += d[0];
+			attack_dir[1] += d[1];
 
 			attack_count++;
 		}
@@ -90,9 +95,8 @@ int main()
 	int p_h = 4;
 	int p_v = 3;
 
-	vector_2d obstacles{{5, 5}, {4,2}, {2,3}};
-
-	// computation function call
+	vector_2d obstacles{{5, 5}, {4,2}, {2,3}, {3,2}};
+	
 	int attacks = get_attack_count(p_h, p_v, n, obstacles);
 
 	// output
@@ -108,3 +112,4 @@ int main()
 
 	return 0;
 }
+
