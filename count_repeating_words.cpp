@@ -4,8 +4,12 @@
 #include <fstream>
 #include <iterator>
 #include <unistd.h>
+#include<limits>
 
-
+/**
+ * command to compile for windows with static libraries
+ * i686-w64-mingw32-g++ -static-libgcc -static-libstdc++ count_repeating_words.cpp -o count_win.exe
+ */
 
 bool read_file_name(std::string& file_name)
 {
@@ -109,5 +113,9 @@ int main()
 		std::cout << "programm terminated with errors" << std::endl;
 	}	
 
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	std::cout <<"\npress enter to exit";
+	std::getchar();
+	
 	return 0;
 }
