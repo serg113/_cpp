@@ -48,7 +48,7 @@ void print_map(Iterator begin, Iterator end)
 
 template <typename T> 
 
-bool fill_map(T& map, const std::string& file_path, void (*fn)(typename T::iterator, typename T::iterator))
+bool fill_map(T& map, const std::string& file_path, void (*fn)(typename T::const_iterator, typename T::const_iterator))
 {
 	bool success;
 
@@ -69,7 +69,7 @@ bool fill_map(T& map, const std::string& file_path, void (*fn)(typename T::itera
 	
 		if(fn != nullptr)
 		{
-			fn(map.begin(), map.end());
+			fn(map.cbegin(), map.cend());
 		}
 		else { std::cout << "error: null pointer for callback function" << std::endl;}
 
@@ -89,7 +89,7 @@ bool fill_map(T& map, const std::string& file_path, void (*fn)(typename T::itera
 
 typedef std::unordered_map<std::string, int> umap;
 
-typedef void (* callback_t) (umap::iterator, umap::iterator);
+typedef void (* callback_t) (umap::const_iterator, umap::const_iterator);
 
 
 int main()
