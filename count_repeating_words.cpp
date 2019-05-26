@@ -4,7 +4,10 @@
 #include <fstream>
 #include <iterator>
 #include <unistd.h>
-#include<limits>
+#include <limits>
+
+//#include <vector>
+
 
 /**
  * command to compile for windows with static libraries
@@ -30,10 +33,21 @@ bool read_file_name(std::string& file_name)
 }
 
 
+template <typename ForwardIterator, typename T>
 
-template <typename ForwardIterator>
+void print_iterator(ForwardIterator begin, ForwardIterator end, std::forward_iterator_tag, T p)
+{
+	for(; begin != end; begin++)
+	{
+		std::cout << *begin << " " << std::endl;
+	}
+}
 
-void _print_map(ForwardIterator begin, ForwardIterator end, std::forward_iterator_tag)
+
+
+template <typename ForwardIterator, typename K, typename V>
+
+void print_iterator(ForwardIterator begin, ForwardIterator end, std::forward_iterator_tag, std::pair<const K, V> p)
 {
 	for(; begin != end; begin++)
 	{
@@ -44,10 +58,12 @@ void _print_map(ForwardIterator begin, ForwardIterator end, std::forward_iterato
 
 template <typename Iterator> 
 
-void print_map(Iterator begin, Iterator end)
+void print(Iterator begin, Iterator end)
 {
-	return _print_map(begin, end, typename std::iterator_traits<Iterator>::iterator_category());
+	return print_iterator(begin, end, typename std::iterator_traits<Iterator>::iterator_category(), 
+			typename std::iterator_traits<Iterator>::value_type());
 }
+
 
 
 template <typename T> 
@@ -100,7 +116,10 @@ int main()
 {
 	umap map;
 
-	callback_t prt = print_map;
+	callback_t prt = print;
+	
+	//std::vector<std::string> vec = { "one", "two", "three"};
+	//print(vec.cbegin(), vec.cend());
 
 	std::string file_name;
 	
