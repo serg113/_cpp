@@ -37,21 +37,23 @@ template <typename ForwardIterator, typename T>
 
 void print_iterator(ForwardIterator begin, ForwardIterator end, std::forward_iterator_tag, T p)
 {
-	for(; begin != end; begin++)
+	while(begin != end)
 	{
 		std::cout << *begin << std::endl;
+		++begin;
 	}
 }
-
 
 
 template <typename ForwardIterator, typename Key, typename Value>
 
 void print_iterator(ForwardIterator begin, ForwardIterator end, std::forward_iterator_tag, std::pair<const Key, Value> p)
 {
-	for(; begin != end; begin++)
+	while(begin != end)
 	{
-		std::cout << begin -> first << ":" << begin -> second << std::endl;
+		std::cout << begin -> first << ":" << 
+			     begin -> second << std::endl;
+		++begin;
 	}
 }
 
