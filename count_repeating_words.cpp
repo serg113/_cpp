@@ -39,15 +39,15 @@ void print_iterator(ForwardIterator begin, ForwardIterator end, std::forward_ite
 {
 	for(; begin != end; begin++)
 	{
-		std::cout << *begin << " " << std::endl;
+		std::cout << *begin << std::endl;
 	}
 }
 
 
 
-template <typename ForwardIterator, typename K, typename V>
+template <typename ForwardIterator, typename Key, typename Value>
 
-void print_iterator(ForwardIterator begin, ForwardIterator end, std::forward_iterator_tag, std::pair<const K, V> p)
+void print_iterator(ForwardIterator begin, ForwardIterator end, std::forward_iterator_tag, std::pair<const Key, Value> p)
 {
 	for(; begin != end; begin++)
 	{
