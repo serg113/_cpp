@@ -47,57 +47,58 @@ class Todo
 class TodoList
 {
 	private:
-		Todo current;
+		Todo* current {new Todo};
 		
-		Todo next;
+		Todo* next {new Todo};
 
 	public:		
 		TodoList(std::string&& name) : TodoList(std::move(name), "null") {}
 		
 		TodoList(std::string&& name, std::string&& next_name) 
 		
-			: current(std::move(name)), next(std::move(next_name)) {}
+			: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} {}
 
-		
-		void set_item_name(std::string&& name)
+		~TodoList()
 		{
-			current.set_item_name(std::move(name));
-		}
-		
-		void set_next_name(std::string&& name)
-		{
-			std::cout << "next default name is: " << next.get_item_name() << std::endl;
-
-			next.set_item_name(std::move(name));
-		
-			std::cout << "next name is: " << next.get_item_name() << std::endl;
+			delete current;
+			
+			delete next;
 		}
 
-		std::string&& get_item_name()
+		std::string&& get_root_name()
 		{
-			return current.get_item_name();
+			return current->get_item_name();
 		}
 
-		Todo& get_next()
+		Todo* get_next()
 		{
 			return next;
 		}
 	
-		Todo&& get_next_move()
-		{
-			return std::move(next);
-		}
-
 };
+
+
+void construct()
+{
+	TodoList t {"root", "child"};
+
+	std::cout << "first is item: " << t.get_root_name() << std::endl;
+	
+	auto* p = t.get_next();
+
+	std::cout << "next is item: " << p->get_item_name() << std::endl;
+}
 
 
 
 int main()
 {
-	TodoList t {"root", "child"};
+	std::cout << "start of main" << std::endl;
 	
-	auto& p = t.get_next();
+	construct();
+	
+	std::cout << "end of main" << std::endl;
 
-	auto&& rp = t.get_next_move();
+	//auto&& rp = t.get_next_move();
 }
 
