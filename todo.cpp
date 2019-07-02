@@ -18,7 +18,7 @@ class Todo
 		std::string item_name;
 	public:
 		
-		Todo(std::string&& name = "null") : count{0}, item_name{name} 
+		Todo(const std::string&& name = "null") : count{0}, item_name{name} 
 		{
 			std::cout << "constructor call for item: " << name << std::endl;
 		}
@@ -28,7 +28,7 @@ class Todo
 			std::cout << "destructor call for item: " << item_name << std::endl;
 		}
 
-		void set_item_name(std::string&& name)
+		void set_item_name(const std::string&& name)
 		{
 			item_name = name;
 			std::cout << "name of item changed to: " << item_name << std::endl;
@@ -49,7 +49,7 @@ class TodoList
 
 	public:		
 		
-		TodoList(std::string&& name = "null", std::string&& next_name = "null") 
+		TodoList(const std::string&& name = "null", const std::string&& next_name = "null") 
 		
 			: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} 
 		{
