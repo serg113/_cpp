@@ -17,12 +17,8 @@ class Todo
 		
 		std::string item;
 	public:
-		Todo() : count{0}, item{"null"} 
-		{
-			std::cout << "constructor call for item without name" << std::endl;
-		}
 		
-		Todo(std::string&& name) : count{0}, item{name} 
+		Todo(std::string&& name = "null") : count{0}, item{name} 
 		{
 			std::cout << "constructor call for item: " << name << std::endl;
 		}
@@ -47,16 +43,19 @@ class Todo
 class TodoList
 {
 	private:
-		Todo* current {new Todo};
+		Todo* current;
 		
-		Todo* next {new Todo};
+		Todo* next;
 
 	public:		
-		TodoList(std::string&& name) : TodoList(std::move(name), "null") {}
 		
-		TodoList(std::string&& name, std::string&& next_name) 
+		TodoList(std::string&& name = "null", std::string&& next_name = "null") 
 		
-			: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} {}
+			: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} 
+		{
+			std::cout << "TodoList constructor call, parameters: " 
+				  << name << ", " << next_name << std::endl;
+		}
 
 		~TodoList()
 		{
@@ -80,6 +79,9 @@ class TodoList
 
 void construct()
 {
+	//TodoList t0 {};
+	//TodoList t1 {"root"};
+
 	TodoList t {"root", "child"};
 
 	std::cout << "first is item: " << t.get_root_name() << std::endl;
