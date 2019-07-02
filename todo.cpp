@@ -15,26 +15,26 @@ class Todo
 	private:
 		int count;
 		
-		std::string item;
+		std::string item_name;
 	public:
 		
-		Todo(std::string&& name = "null") : count{0}, item{name} 
+		Todo(std::string&& name = "null") : count{0}, item_name{name} 
 		{
 			std::cout << "constructor call for item: " << name << std::endl;
 		}
 		
 		~Todo()
 		{
-			std::cout << "destructor call for item: " << item << std::endl;
+			std::cout << "destructor call for item: " << item_name << std::endl;
 		}
 
 		void set_item_name(std::string&& name)
 		{
-			item = name;
-			std::cout << "name of item changed to: " << item << std::endl;
+			item_name = name;
+			std::cout << "name of item changed to: " << item_name << std::endl;
 		}
 
-		std::string&& get_item_name()
+		std::string&& get_item_name() const
 		{
 			return std::move(item);
 		}
@@ -64,12 +64,12 @@ class TodoList
 			delete next;
 		}
 
-		std::string&& get_root_name()
+		std::string&& get_root_name() const
 		{
 			return current->get_item_name();
 		}
 
-		Todo* get_next()
+		Todo* get_next() const
 		{
 			return next;
 		}
