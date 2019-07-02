@@ -34,9 +34,9 @@ class Todo
 			std::cout << "name of item changed to: " << item_name << std::endl;
 		}
 
-		std::string&& get_item_name() const
+		std::string&& get_item_name()
 		{
-			return std::move(item);
+			return std::move(item_name);
 		}
 };
 
