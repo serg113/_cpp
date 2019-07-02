@@ -43,7 +43,7 @@ class Todo
 class TodoList
 {
 	private:
-		Todo* current;
+		Todo* current; // use smart pointers(std::shared_pointer<Todo>) here, and remove deletion from in destructor
 		
 		Todo* next;
 
