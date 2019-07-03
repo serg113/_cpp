@@ -77,7 +77,7 @@ class TodoList
 };
 
 
-void construct()
+std::shared_ptr<Todo> construct()
 {
 	//TodoList t0 {};
 	//TodoList t1 {"root"};
@@ -89,6 +89,9 @@ void construct()
 	auto p = t.get_next();
 
 	std::cout << "next is item: " << p->get_item_name() << std::endl;
+
+	return p;
+
 }
 
 
@@ -97,7 +100,9 @@ int main()
 {
 	std::cout << "start of main" << std::endl;
 	
-	construct();
+	std::shared_ptr<Todo> p = construct();
+
+	std::cout << "getting shared pointer from main for item: " << p->get_item_name() << std::endl;
 	
 	std::cout << "end of main" << std::endl;
 
