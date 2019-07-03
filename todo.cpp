@@ -1,5 +1,5 @@
 /** 
- * to do list
+ * example to train construction-destruction processes and move semantics
  */
 
 # include <iostream>
@@ -43,9 +43,10 @@ class Todo
 class TodoList
 {
 	private:
-		Todo* current; // use smart pointers(std::shared_pointer<Todo>) here, and remove deletion from in destructor
 		
-		Todo* next;
+		std::shared_ptr<Todo> current; 
+		
+		std::shared_ptr<Todo> next;
 
 	public:		
 		
@@ -53,23 +54,18 @@ class TodoList
 		
 			: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} 
 		{
-			std::cout << "TodoList constructor call, parameters: " 
+			std::cout << "TodoList constructor was called, parameters: " 
 				  << name << ", " << next_name << std::endl;
 		}
 
-		~TodoList()
-		{
-			delete current;
-			
-			delete next;
-		}
+		~TodoList(){//delete current;//delete next;}
 
 		std::string&& get_root_name() const
 		{
 			return current->get_item_name();
 		}
 
-		Todo* get_next() const
+		std::shared_ptr<Todo> get_next() const
 		{
 			return next;
 		}
@@ -86,7 +82,7 @@ void construct()
 
 	std::cout << "first is item: " << t.get_root_name() << std::endl;
 	
-	auto* p = t.get_next();
+	auto p = t.get_next();
 
 	std::cout << "next is item: " << p->get_item_name() << std::endl;
 }
