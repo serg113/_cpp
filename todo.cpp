@@ -52,13 +52,17 @@ class TodoList
 		
 		TodoList(const std::string&& name = "null", const std::string&& next_name = "null") 
 		
-			: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} 
+			//: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} 
 		{
 			std::cout << "TodoList constructor was called, parameters: " 
 				  << name << ", " << next_name << std::endl;
+			
+			current = std::make_shared<Todo>(std::move(name));
+
+			next = std::make_shared<Todo>(std::move(next_name));
 		}
 
-		~TodoList(){//delete current;//delete next;}
+		~TodoList(){}
 
 		std::string&& get_root_name() const
 		{
