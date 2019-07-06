@@ -11,14 +11,14 @@
 # include <list>
 
 
-class Base
+class TodoBase
 {
 	public:
-		virtual std::string&& get_item_name() = 0;
+		virtual const std::string& get_item_name() const = 0;
 };
 
 
-class Todo : public Base
+class Todo : public TodoBase
 {
 	private:
 
@@ -43,9 +43,9 @@ class Todo : public Base
 			std::cout << "name of item changed to: " << item_name << std::endl;
 		}
 		
-		std::string&& get_item_name()
+		const std::string& get_item_name() const
 		{
-			return std::move(item_name);
+			return item_name;
 		}
 };
 
@@ -59,12 +59,9 @@ class TodoPair
 
 	public:		
 		
-		TodoPair(const std::string&& name = "null", const std::string&& next_name = "null") 
-		
-			//: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} 
+		TodoPair(const std::string&& name = "null", const std::string&& next_name = "null") 	
 		{
-			std::cout << "TodoPair constructor was called, parameters: " 
-				  << name << ", " << next_name << std::endl;
+			std::cout << "TodoPair constructor called, parameters: " << name << ", " << next_name << std::endl;
 			
 			current = std::make_shared<Todo>(std::move(name));
 
@@ -73,12 +70,12 @@ class TodoPair
 
 		~TodoPair(){}
 
-		std::string&& get_current_name() const
+		const std::string& get_current_name() const
 		{
 			return current->get_item_name();
 		}
 
-		std::string&& get_next_name() const
+		const std::string& get_next_name() const
 		{
 			return next->get_item_name();
 		}
@@ -90,12 +87,12 @@ class TodoPair
 	
 };
 
-void print(const TodoPair& pair_item, std::string&& (TodoPair::*func)() const)
+void print(const TodoPair& pair_item, const std::string& (TodoPair::*func)() const)
 {
 	std::cout << "item with name: " << (pair_item.*func)() << std::endl;
 }
 
-void print(std::shared_ptr<Todo> item_ptr, std::string&& (Todo::*func)())
+void print(std::shared_ptr<Todo> item_ptr, const std::string& (TodoBase::*func)() const)
 {
 	// shared pointer operator->() returns pointer to object pointed by stored pointer
 	// so we can use in the same way p.get() that returns contained pointer
@@ -105,7 +102,7 @@ void print(std::shared_ptr<Todo> item_ptr, std::string&& (Todo::*func)())
 }
 
 
-typedef std::string&& (TodoPair::*f_ptr)() const;
+typedef const std::string& (TodoPair::*f_ptr)() const;
 
 
 void print(const TodoPair& tp_ptr, const std::list<f_ptr> f_list)
@@ -129,13 +126,13 @@ std::shared_ptr<Todo> construct()
 
 	auto tp_fptr = &TodoPair::get_current_name;
 	
-	auto td_fptr = &Todo::get_item_name;
+	auto td_fptr = &TodoBase::get_item_name;
 	
 	print(pair, tp_fptr);
 	
 	print(item, td_fptr);
 		
-	//collecting all functions in one array
+	//collecting function pointers in array
 
 	std::list<f_ptr> f_list {&TodoPair::get_current_name, &TodoPair::get_next_name};	
 	
