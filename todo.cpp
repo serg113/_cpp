@@ -76,19 +76,33 @@ class TodoList
 	
 };
 
+void print(const TodoList& t, std::string&& (TodoList::*func)() const)
+{
+	std::cout << "item with name: " << (t.*func)() << std::endl;
+}
+
+void print(std::shared_ptr<Todo> p, std::string&& (Todo::*func)())
+{
+	// shared pointer operator->() returns pointer to object pointed by stored pointer
+	// so we can use in the same way p.get() that returns contained pointer
+	// then we can use *p to dereference contained object
+	
+	std::cout << "item with name: " << ((*p).*func)() << std::endl;
+}
+
 
 std::shared_ptr<Todo> construct()
 {
-	//TodoList t0 {};
-	//TodoList t1 {"root"};
-
 	TodoList t {"root", "child"};
 
-	std::cout << "first is item: " << t.get_root_name() << std::endl;
-	
+	auto s = &TodoList::get_root_name;
+	auto ss = &Todo::get_item_name;
+
+	print(t, s);
+		
 	auto p = t.get_next();
 
-	std::cout << "next is item: " << p->get_item_name() << std::endl;
+	print(p, ss);
 
 	return p;
 
@@ -101,8 +115,6 @@ int main()
 	std::cout << "start of main" << std::endl;
 	
 	std::shared_ptr<Todo> p = construct();
-
-	std::cout << "getting shared pointer from main for item: " << p->get_item_name() << std::endl;
 	
 	std::cout << "end of main" << std::endl;
 
