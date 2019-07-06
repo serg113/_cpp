@@ -40,7 +40,7 @@ class Todo
 		}
 };
 
-class TodoList
+class TodoPair
 {
 	private:
 		
@@ -50,11 +50,11 @@ class TodoList
 
 	public:		
 		
-		TodoList(const std::string&& name = "null", const std::string&& next_name = "null") 
+		TodoPair(const std::string&& name = "null", const std::string&& next_name = "null") 
 		
 			//: current{new Todo{std::move(name)}}, next{new Todo{std::move(next_name)}} 
 		{
-			std::cout << "TodoList constructor was called, parameters: " 
+			std::cout << "TodoPair constructor was called, parameters: " 
 				  << name << ", " << next_name << std::endl;
 			
 			current = std::make_shared<Todo>(std::move(name));
@@ -62,7 +62,7 @@ class TodoList
 			next = std::make_shared<Todo>(std::move(next_name));
 		}
 
-		~TodoList(){}
+		~TodoPair(){}
 
 		std::string&& get_root_name() const
 		{
@@ -76,7 +76,7 @@ class TodoList
 	
 };
 
-void print(const TodoList& t, std::string&& (TodoList::*func)() const)
+void print(const TodoPair& t, std::string&& (TodoPair::*func)() const)
 {
 	std::cout << "item with name: " << (t.*func)() << std::endl;
 }
@@ -93,9 +93,9 @@ void print(std::shared_ptr<Todo> p, std::string&& (Todo::*func)())
 
 std::shared_ptr<Todo> construct()
 {
-	TodoList t {"root", "child"};
+	TodoPair t {"root", "child"};
 
-	auto s = &TodoList::get_root_name;
+	auto s = &TodoPair::get_root_name;
 	auto ss = &Todo::get_item_name;
 
 	print(t, s);
