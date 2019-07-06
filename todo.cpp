@@ -93,19 +93,18 @@ void print(std::shared_ptr<Todo> p, std::string&& (Todo::*func)())
 
 std::shared_ptr<Todo> construct()
 {
-	TodoPair t {"root", "child"};
+	TodoPair pair {"root", "child"};
 
-	auto s = &TodoPair::get_root_name;
-	auto ss = &Todo::get_item_name;
+	auto tp_fptr = &TodoPair::get_root_name;
+	auto td_fptr = &Todo::get_item_name;
 
-	print(t, s);
+	print(pair, tp_fptr);
 		
-	auto p = t.get_next();
+	auto item = pair.get_next();
 
-	print(p, ss);
+	print(item, td_fptr);
 
-	return p;
-
+	return item;
 }
 
 
