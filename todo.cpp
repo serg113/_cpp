@@ -27,14 +27,27 @@ class Todo : public TodoBase
 		std::string item_name;
 	public:
 		
+		Todo(const Todo& t)
+		{
+			std::cout << "---> copy constructor call: " << t.get_item_name() << std::endl;
+
+			item_name = t.get_item_name();
+		}
+
+		Todo(Todo&& t)
+		{
+			std::cout << "---> move constructor call: " << t.get_item_name() << std::endl;
+			item_name = t.get_item_name();
+		}
+
 		Todo(const std::string&& name = "null") : count{0}, item_name{name} 
 		{
-			std::cout << "constructor call for item: " << name << std::endl;
+			std::cout << "---> constructor call for item: " << name << std::endl;
 		}
 		
 		~Todo()
 		{
-			std::cout << "destructor call for item: " << item_name << std::endl;
+			std::cout << "---< destructor call for item: " << item_name << std::endl;
 		}
 
 		void set_item_name(const std::string&& name)
@@ -58,10 +71,10 @@ class TodoPair
 		std::shared_ptr<Todo> next;
 
 	public:		
-		
-		TodoPair(const std::string&& name = "null", const std::string&& next_name = "null") 	
+	
+		TodoPair(const std::string name = "null", const std::string next_name = "null") 	
 		{
-			std::cout << "TodoPair constructor called, parameters: " << name << ", " << next_name << std::endl;
+			std::cout << "---> TodoPair constructor called, parameters: " << name << ", " << next_name << std::endl;
 			
 			current = std::make_shared<Todo>(std::move(name));
 
@@ -147,8 +160,8 @@ int main()
 {
 	std::cout << "start of main" << std::endl;
 	
-	std::shared_ptr<Todo> item = construct();
+	auto item = construct();
 	
-	std::cout << "end of main" << std::endl;
+	std::cout << "end of main\n --- still alive item: " << item->get_item_name() << std::endl;
 }
 
