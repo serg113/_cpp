@@ -8,14 +8,13 @@
 template <typename T>
 class Filter
 {
-
 	typedef typename std::vector<T>::const_iterator it_v;
 	typedef typename std::list<T>::const_iterator it_l;
 
-	std::unordered_set<T> (Filter<T>::*filter_dupl)() const;	
+	std::unordered_set<T> (Filter<T>::*filter_duplicates)() const;	
 	
-	std::vector<T> vec_org;
-	std::list<T> list_org;
+	std::vector<T> vec_init;
+	std::list<T> list_init;
 
 	public:
 		Filter() = delete;
@@ -26,10 +25,10 @@ class Filter
 
 			for(auto& item : list) // may be initialized without loop ???
 			{
-				list_org.push_back(item);
+				list_init.push_back(item);
 			}
 		
-			filter_dupl = &Filter<T>::filter_duplicates_list;
+			filter_duplicates = &Filter<T>::filter_duplicates_list;
 		}
 		
 		Filter(it_v begin, it_v end)
@@ -38,10 +37,10 @@ class Filter
 
 			for(auto it = begin; it != end; it++)
 			{
-				vec_org.push_back(*it);
+				vec_init.push_back(*it);
 			}
 			
-			this->filter_dupl = &Filter<T>::filter_duplicates_vector;
+			filter_duplicates = &Filter<T>::filter_duplicates_vector;
 		}
 
 		Filter(it_l begin, it_l end)
@@ -50,15 +49,15 @@ class Filter
 
 			for(auto it = begin; it != end; it++)
 			{
-				list_org.push_back(*it);
+				list_init.push_back(*it);
 			}
 	
-			this->filter_dupl = &Filter::filter_duplicates_list;
+			filter_duplicates = &Filter::filter_duplicates_list;
 		}
 
 		std::unordered_set<T> get_without_duplicates() const
 		{
-			return (this->*filter_dupl)();
+			return (this->*filter_duplicates)();
 		}
 
 	private:
@@ -67,7 +66,7 @@ class Filter
 		{
 			std::unordered_set<T> set;
 
-			for(auto& item : list_org)
+			for(auto& item : list_init)
 			{
 				set.insert(item);
 			}
@@ -79,7 +78,7 @@ class Filter
 		{
 			std::unordered_set<T> set;
 
-			for(auto& item : vec_org)
+			for(auto& item : vec_init)
 			{
 				set.insert(item);
 			}
