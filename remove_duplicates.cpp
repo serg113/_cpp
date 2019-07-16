@@ -10,9 +10,8 @@ class Filter
 {	
 	std::list<T> list_init;
 
-
 	public:
-		Filter() = delete;
+		Filter() = delete; // force to initialize processing list at object construction
 		
 		Filter(const std::initializer_list<T>& list) : list_init { list }
 		{
@@ -35,7 +34,7 @@ class Filter
 
 
 	private:
-	
+		
 		void init(const Iterator begin, const Iterator end, std::forward_iterator_tag, T)
 		{
 			for(auto it = begin; it != end; it++)
@@ -60,22 +59,36 @@ class Filter
 
 int main()
 {
+	/**
+	 * initialization
+	 */
+
+	Filter<int, std::initializer_list<int>::iterator> filter_0 { 1, 3, 2, 1, 3};
+
 	Filter<char, std::iterator<std::forward_iterator_tag, char> > filter{'a', 'b', 'c', 'a', 'c'};
-	
-	auto char_set = filter.get_without_duplicates();
 
-	
-	for(auto i : char_set) { std::cout << i << " ";} std::cout << std::endl;
-
-
-	
 	std::list<int> lst{1, 2, 3, 4, 3, 2, 1};
 	
 	Filter<int, std::list<int>::iterator> filter_2(lst.begin(), lst.end());
 
-	auto int_set = filter_2.get_without_duplicates();
+	/**
+	 * filtering
+	 */
 
+	auto filter_0_set = filter_0.get_without_duplicates();	
+
+	auto filter_set = filter.get_without_duplicates();
+		
+	auto filter_2_set = filter_2.get_without_duplicates();
+
+	/**
+	 * printing
+	 */
+
+	for(auto i : filter_0_set) { std::cout << i << " ";} std::cout << std::endl;
+
+	for(auto i : filter_set) { std::cout << i << " ";} std::cout << std::endl;
 	
-	for(auto i : int_set) { std::cout << i << " "; } std::cout << std::endl;
+	for(auto i : filter_2_set) { std::cout << i << " "; } std::cout << std::endl;
 	
 }
