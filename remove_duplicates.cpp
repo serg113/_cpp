@@ -5,94 +5,64 @@
 #include <iterator>
 #include <vector>
 
-template <typename T>
+template <typename T, typename Iterator>
 class Filter
 {
-	typedef typename std::vector<T>::const_iterator it_v;
-	typedef typename std::list<T>::const_iterator it_l;
-
-	std::unordered_set<T> (Filter<T>::*filter_duplicates)() const;	
+	//std::unordered_set<T> (Filter<T>::*filter_duplicates)() const;	
 	
-	std::vector<T> vec_init;
 	std::list<T> list_init;
+
 
 	public:
 		Filter() = delete;
 		
-		Filter(std::initializer_list<T> list)
+		Filter(const std::initializer_list<T>& list) : list_init { list }
 		{
 			std::cout << "constactor call --> initializer list" << std::endl;
-
-			for(auto& item : list) // may be initialized without loop ???
-			{
-				list_init.push_back(item);
-			}
-		
-			filter_duplicates = &Filter<T>::filter_duplicates_list;
-		}
-		
-		Filter(it_v begin, it_v end)
-		{
-			std::cout << "constructor call --> vector iterator case" << std::endl;
-
-			for(auto it = begin; it != end; it++)
-			{
-				vec_init.push_back(*it);
-			}
-			
-			filter_duplicates = &Filter<T>::filter_duplicates_vector;
 		}
 
-		Filter(it_l begin, it_l end)
+		Filter(const Iterator begin, const  Iterator end)
 		{
-			std::cout << "constructor call --> list iterator case" << std::endl;
+			std::cout << "generic constructor call" << std::endl;
 
+			init(begin, end, 
+				typename std::iterator_traits<Iterator>::iterator_category(), 
+					typename std::iterator_traits<Iterator>::value_type());
+		}
+	
+		std::unordered_set<T> get_without_duplicates() const
+		{
+			return filter_duplicates_list();
+		}
+
+
+	private:
+	
+		void init(const Iterator begin, const Iterator end, std::forward_iterator_tag, T)
+		{
 			for(auto it = begin; it != end; it++)
 			{
 				list_init.push_back(*it);
 			}
-	
-			filter_duplicates = &Filter::filter_duplicates_list;
 		}
 
-		std::unordered_set<T> get_without_duplicates() const
-		{
-			return (this->*filter_duplicates)();
-		}
-
-	private:
 
 		std::unordered_set<T> filter_duplicates_list() const
 		{
 			std::unordered_set<T> set;
 
 			for(auto& item : list_init)
-			{
+			{	
 				set.insert(item);
 			}
-
 			return set;
 		}
-
-		std::unordered_set<T> filter_duplicates_vector() const
-		{
-			std::unordered_set<T> set;
-
-			for(auto& item : vec_init)
-			{
-				set.insert(item);
-			}
-
-			return set;
-		}
-
-
 };
 
 
 int main()
 {
-	Filter<char> filter{'a', 'b', 'c', 'a', 'c'};
+	Filter<char, std::iterator<std::forward_iterator_tag, char> > filter{'a', 'b', 'c', 'a', 'c'};
 	
 	auto char_set = filter.get_without_duplicates();
 
@@ -102,16 +72,18 @@ int main()
 	}
 	std::cout << std::endl;
 
-
-	std::list<int> vec{1, 2, 3, 4, 3, 2, 1};
 	
-	Filter<int> filt(vec.cbegin(), vec.cend());
+	std::list<int> lst{1, 2, 3, 4, 3, 2, 1};
+	
+	//Filter<int> filt(lst.cbegin(), lst.cend());
+	Filter<int, std::list<int>::iterator> filter_2(lst.begin(), lst.end());
 
-	auto int_set = filt.get_without_duplicates();
+	auto int_set = filter_2.get_without_duplicates();
 	
 	for(auto i : int_set)
 	{
 		std::cout << i << " ";
 	}
 	std::cout << std::endl;
+	
 }
