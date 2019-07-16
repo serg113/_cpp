@@ -7,9 +7,7 @@
 
 template <typename T, typename Iterator>
 class Filter
-{
-	//std::unordered_set<T> (Filter<T>::*filter_duplicates)() const;	
-	
+{	
 	std::list<T> list_init;
 
 
@@ -23,7 +21,7 @@ class Filter
 
 		Filter(const Iterator begin, const  Iterator end)
 		{
-			std::cout << "generic constructor call" << std::endl;
+			std::cout << "constructor call --> iterators" << std::endl;
 
 			init(begin, end, 
 				typename std::iterator_traits<Iterator>::iterator_category(), 
@@ -55,7 +53,7 @@ class Filter
 			{	
 				set.insert(item);
 			}
-			return set;
+			return set; //NRVO
 		}
 };
 
@@ -66,24 +64,18 @@ int main()
 	
 	auto char_set = filter.get_without_duplicates();
 
-	for(auto i : char_set) 
-	{
-		std::cout << i << " ";
-	}
-	std::cout << std::endl;
+	
+	for(auto i : char_set) { std::cout << i << " ";} std::cout << std::endl;
+
 
 	
 	std::list<int> lst{1, 2, 3, 4, 3, 2, 1};
 	
-	//Filter<int> filt(lst.cbegin(), lst.cend());
 	Filter<int, std::list<int>::iterator> filter_2(lst.begin(), lst.end());
 
 	auto int_set = filter_2.get_without_duplicates();
+
 	
-	for(auto i : int_set)
-	{
-		std::cout << i << " ";
-	}
-	std::cout << std::endl;
+	for(auto i : int_set) { std::cout << i << " "; } std::cout << std::endl;
 	
 }
