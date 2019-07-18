@@ -18,7 +18,7 @@ class Filter
 			std::cout << "constactor call --> initializer list" << std::endl;
 		}
 
-		Filter(const Iterator begin, const  Iterator end)
+		Filter(Iterator begin, Iterator end)
 		{
 			std::cout << "constructor call --> iterators" << std::endl;
 
@@ -35,23 +35,16 @@ class Filter
 
 	private:
 		
-		void init(const Iterator begin, const Iterator end, std::forward_iterator_tag, T)
+		void init(Iterator begin, Iterator end, std::forward_iterator_tag, T)
 		{
-			for(auto it = begin; it != end; it++)
-			{
-				list_init.push_back(*it);
-			}
+			list_init = std::list<T>{begin, end};
 		}
 
 
 		std::unordered_set<T> filter_duplicates_list() const
 		{
-			std::unordered_set<T> set;
+			std::unordered_set<T> set(list_init.begin(), list_init.end());
 
-			for(auto& item : list_init)
-			{	
-				set.insert(item);
-			}
 			return set; //NRVO
 		}
 };
