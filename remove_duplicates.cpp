@@ -7,13 +7,16 @@
 
 template <typename Iterator, typename T>
 class Filter
-{	
-	std::list<T> init_l;
+{
+	typedef typename std::iterator_traits<Iterator>::iterator_category it_category;
+	typedef typename std::iterator_traits<Iterator>::value_type it_type;	
+	
+	std::list<T> items;
 
 	public:
 		Filter() = delete; // force to initialize processing list at object construction
 		
-		Filter(const std::initializer_list<T>& list) : init_l { list }
+		Filter(const std::initializer_list<T>& list) : items {list}
 		{
 			std::cout << "constructor call --> initializer list" << std::endl;
 		}
@@ -22,30 +25,18 @@ class Filter
 		{
 			std::cout << "constructor call --> iterators" << std::endl;
 
-			init(begin, end, 
-				typename std::iterator_traits<Iterator>::iterator_category(), 
-					typename std::iterator_traits<Iterator>::value_type());
+			init_items(begin, end, it_category(), it_type());
 		}
 	
 		std::unordered_set<T> get_without_duplicates() const
 		{
-			return filter_duplicates_list();
+			return std::unordered_set<T> (items.begin(), items.end()); // RVO
 		}
 
-
-	private:
-		
-		void init(const Iterator begin, const Iterator end, const std::forward_iterator_tag, const T)
+	private:		
+		void init_items(const Iterator begin, const Iterator end, const std::forward_iterator_tag, const T)
 		{
-			init_l = std::list<T> { begin, end };
-		}
-
-
-		std::unordered_set<T> filter_duplicates_list() const
-		{
-			std::unordered_set<T> set(init_l.begin(), init_l.end());
-
-			return set; //NRVO
+			items = std::list<T> {begin, end};
 		}
 };
 
@@ -68,7 +59,7 @@ int main()
 	 * filtering
 	 */
 
-	auto filter_0_set = filter_0.get_without_duplicates();	
+	auto filter_0_set = filter_0.get_without_duplicates();
 
 	auto filter_1_set = filter_1.get_without_duplicates();
 		
@@ -82,6 +73,6 @@ int main()
 
 	for(auto i : filter_1_set) { std::cout << i << " ";} std::cout << std::endl;
 	
-	for(auto i : filter_2_set) { std::cout << i << " "; } std::cout << std::endl;
+	for(auto i : filter_2_set) { std::cout << i << " ";} std::cout << std::endl;
 	
 }
