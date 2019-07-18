@@ -5,20 +5,20 @@
 #include <iterator>
 #include <vector>
 
-template <typename T, typename Iterator>
+template <typename Iterator, typename T>
 class Filter
 {	
-	std::list<T> list_init;
+	std::list<T> init_l;
 
 	public:
 		Filter() = delete; // force to initialize processing list at object construction
 		
-		Filter(const std::initializer_list<T>& list) : list_init { list }
+		Filter(const std::initializer_list<T>& list) : init_l { list }
 		{
-			std::cout << "constactor call --> initializer list" << std::endl;
+			std::cout << "constructor call --> initializer list" << std::endl;
 		}
 
-		Filter(Iterator begin, Iterator end)
+		Filter(const Iterator begin, const Iterator end)
 		{
 			std::cout << "constructor call --> iterators" << std::endl;
 
@@ -35,15 +35,15 @@ class Filter
 
 	private:
 		
-		void init(Iterator begin, Iterator end, std::forward_iterator_tag, T)
+		void init(const Iterator begin, const Iterator end, const std::forward_iterator_tag, const T)
 		{
-			list_init = std::list<T>{begin, end};
+			init_l = std::list<T> { begin, end };
 		}
 
 
 		std::unordered_set<T> filter_duplicates_list() const
 		{
-			std::unordered_set<T> set(list_init.begin(), list_init.end());
+			std::unordered_set<T> set(init_l.begin(), init_l.end());
 
 			return set; //NRVO
 		}
@@ -56,13 +56,13 @@ int main()
 	 * initialization
 	 */
 
-	Filter<int, std::initializer_list<int>::iterator> filter_0 { 1, 3, 2, 1, 3};
+	Filter<std::initializer_list<int>::iterator, int> filter_0 { 1, 3, 2, 1, 3};
 
-	Filter<char, std::iterator<std::forward_iterator_tag, char> > filter{'a', 'b', 'c', 'a', 'c'};
+	Filter<std::iterator<std::forward_iterator_tag, char>, char> filter_1{'a', 'b', 'c', 'a', 'c'};
 
 	std::list<int> lst{1, 2, 3, 4, 3, 2, 1};
 	
-	Filter<int, std::list<int>::iterator> filter_2(lst.begin(), lst.end());
+	Filter<std::list<int>::iterator, int> filter_2(lst.begin(), lst.end());
 
 	/**
 	 * filtering
@@ -70,7 +70,7 @@ int main()
 
 	auto filter_0_set = filter_0.get_without_duplicates();	
 
-	auto filter_set = filter.get_without_duplicates();
+	auto filter_1_set = filter_1.get_without_duplicates();
 		
 	auto filter_2_set = filter_2.get_without_duplicates();
 
@@ -80,7 +80,7 @@ int main()
 
 	for(auto i : filter_0_set) { std::cout << i << " ";} std::cout << std::endl;
 
-	for(auto i : filter_set) { std::cout << i << " ";} std::cout << std::endl;
+	for(auto i : filter_1_set) { std::cout << i << " ";} std::cout << std::endl;
 	
 	for(auto i : filter_2_set) { std::cout << i << " "; } std::cout << std::endl;
 	
