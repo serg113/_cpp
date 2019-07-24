@@ -22,7 +22,7 @@ class Todo : public TodoBase
 {
 	private:
 
-		int count;
+		//int count;
 		
 		std::string item_name;
 	public:
