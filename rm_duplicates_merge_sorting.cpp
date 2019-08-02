@@ -6,6 +6,16 @@
  * this function removes duplicates in list of items
  * based on comparator, like structuring bynary tree, 
  * so output values are sorted in ascending order
+ *
+ * what is need to improve:
+ * 
+ * 1. the sorting algorithms are based on random access iterators, 
+ * 	reason became clear for me after I try to sort std::list here
+ * 	the std::advance function needs to take linear time to access middle of array
+ * 	in case of random access iterator it will take constant time, it is huge loss now
+ * 2.
+ *
+ *
  */
 
 template <typename T>
