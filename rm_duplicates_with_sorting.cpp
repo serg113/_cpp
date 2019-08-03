@@ -11,10 +11,16 @@
  * 
  * 1. the sorting algorithms are based on random access iterators, 
  * 	reason became clear for me after I try to sort std::list here
- * 	the std::advance function needs to take linear time to access middle of array
- * 	in case of random access iterator it will take constant time, 
- * 	but in that case insertion will take linear time, 
- * 	so approach need to be revised
+ * 	the std::advance function needs to take linear time to access middle of array, 
+ * 	
+ * 	in case of random access iterator it will take constant time, but  insertion will take linear time, 
+ *
+ * 	so current approach complexity can be counted:
+ *	1. there are N elements in array, so at first we iterate array that is O(N) linear time
+ *	2. then we insert an element to list each element in O(log(n)) steps
+ *	3. but each insertion need to be by advansed iterator by std::advance(it, x), where x decrease as O(log(N))
+ *
+ *	so if I not make a mistake, in sum we have n*log(n)*log(n) complexity
  * 	
  * 2.
  *
