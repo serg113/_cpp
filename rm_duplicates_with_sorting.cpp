@@ -4,7 +4,7 @@
 
 /**
  * this function removes duplicates in list of items
- * based on comparator, like structuring bynary tree, 
+ * based on "<" comparator, like structuring bynary tree, 
  * so output values are sorted in ascending order
  *
  * what is need to improve:
@@ -12,7 +12,9 @@
  * 1. the sorting algorithms are based on random access iterators, 
  * 	reason became clear for me after I try to sort std::list here
  * 	the std::advance function needs to take linear time to access middle of array
- * 	in case of random access iterator it will take constant time, it is huge loss now
+ * 	in case of random access iterator it will take constant time, 
+ * 	but in that case insertion will take linear time, 
+ * 	so approach need to be revised
  * 	
  * 2.
  *
@@ -22,90 +24,81 @@
 template <typename T>
 std::list<T> remove_duplicates(std::list<T> & lst)
 {
-	std::list<T> r_values;
+	std::list<T> res;
 
 	for(auto item : lst)
 	{
 		std::cout << "steps for item: " << item << std::endl;
 		
 		int count = 0;
+		bool is_inserted {false};
 
-		if(r_values.begin() == r_values.end() || item > *(--r_values.end()))
+
+		if(res.begin() == res.end() || *(--res.end()) < item)
 		{
-			r_values.push_back(item);
+			res.push_back(item);
 
-			std::cout << "push back: " << item << ", steps: " << count << std::endl;
+			is_inserted = true;
+			std::cout << "pushed back: " << item << ", steps: " << count << std::endl;
 		}
-		else if(item < *r_values.begin())
-		{
-			std::cout << " begin of list --> " << *r_values.begin() << std::endl;
-			r_values.insert(r_values.begin(), item);
-
-			std::cout << "insert at front: " << item << " steps: " << count << std::endl;
-		}
-		else
-		{
 		
-			auto it_begin = r_values.begin();
-			auto it_end = r_values.end();
+		if(!is_inserted && item < *res.begin())
+		{
+			res.insert(res.begin(), item);
 
+			is_inserted = true;
+			std::cout << "inserted at front: " << item << " steps: " << count << std::endl;
+		}
+		
+		auto it_begin = res.begin();
+		auto it_end = res.end();
 
-			while(true)
-			{ 
-				++count;
+		while(!is_inserted)
+		{ 
+			++count;
 				
-				auto it = it_begin;
+			auto it = it_begin;
 				
-				int distance = std::distance(it_begin, it_end);
-				
-				int advance_step = distance/2;
+			int half_len = std::distance(it_begin, it_end) / 2;
+			
+			std::advance(it, half_len);
 
-				std::advance(it, advance_step);
-
-				if(item < *it)
+			if(item < *it)
+			{
+				if(half_len < 1)
 				{
-					if(advance_step == 0 || advance_step == 1)
-					{
-						if(item > *it_begin)
-						{
-							r_values.insert(it, item);
-							std::cout << "insert: " << item << ", steps: " << count << std::endl;
-							break;
-						}
-						else
-						{
-							std::cout << "duplicate: " << item << ", steps: " << count << std::endl;
-							break;
-						}
-					}
-					else
-					{
-						it_end = ++it;
-					}
+					res.insert(it, item);
+					is_inserted = true;
 				}
-				else if(item > *it)
-				{
-					if(advance_step == 0 || advance_step == 1)
-					{
-						r_values.insert(--it_end, item);
-						std::cout << "insert after: " << item << ", steps: " << count << std::endl;
-						break;
-					}
-					else
-					{
-						it_begin = it;
-					}
-				}	
 				else
 				{
-					std::cout << "not added: " << item << ", steps: "<< count << std::endl;
-					break;
+					it_end = it;
 				}
 			}
+			else if(*it < item)
+			{
+				if(half_len < 1)
+				{
+					res.insert(++it, item);
+					is_inserted = true;
+				}
+				else
+				{
+					it_begin = it;
+				}
+			}	
+			else
+			{
+				std::cout << "<<!!!>> duplicate: " << item << ", steps: "<< count << std::endl;
+				break;
+			}
+			if(is_inserted)
+				std::cout << "inserted item: " << item << ", steps: " << count << std::endl;
+				
 		}
 	}
 
-	return r_values;
+	return res;
 }
 
 template < typename T> 
@@ -126,5 +119,6 @@ int main()
 	//std::unordered_set<int> set(lst.begin(), lst.end());
 	auto set = remove_duplicates(lst);
 
+	print_list(lst);
 	print_list(set);
 }
