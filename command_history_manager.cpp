@@ -13,7 +13,7 @@ namespace cmh
 		public:
 			CommandHistoryManager(){};
 
-			CommandHistoryManager(std::string & file_path)
+			CommandHistoryManager(const std::string & file_path)
 			{
 				init(file_path);
 			}
@@ -22,7 +22,7 @@ namespace cmh
 
 			}
 
-			void open(std::string & file_path)
+			void open(const std::string & file_path)
 			{
 				init(file_path);
 			}
@@ -48,9 +48,9 @@ namespace cmh
 				return command;
 			}
 		private:
-			void init(std::string & file)
+			void init(const std::string & file_path)
 			{
-				comlog.open(file, std::fstream::in | std::fstream::out | std::fstream::app);
+				comlog.open(file_path, std::fstream::in | std::fstream::out | std::fstream::app);
 				
 				if(!comlog.is_open()) throw "[init error]";
 			}
