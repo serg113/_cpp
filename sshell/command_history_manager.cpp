@@ -68,8 +68,8 @@ namespace cmh
 
 			std::string get_prev_command()
 			{
-				if(std::distance(++prev_command, prev_commands.end()))
-					return *prev_command;
+				if(std::distance(prev_command, prev_commands.end()))
+					return *(prev_command++);
 				else
 					return "";
 			}
@@ -88,6 +88,7 @@ namespace cmh
 				while(comlog.is_open() && std::getline(comlog, command))
 				{
 					prev_commands.push_back(command);
+					prev_command = prev_commands.begin();
 				}		
 
 				comlog.clear();	
