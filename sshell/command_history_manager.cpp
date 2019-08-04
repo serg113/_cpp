@@ -84,8 +84,7 @@ namespace cmh
 					prev_commands.push_back(command);
 				}		
 
-				comlog.clear();
-			
+				comlog.clear();	
 				comlog.seekg(0);
 			}
 	};
