@@ -68,10 +68,15 @@ namespace cmh
 
 			std::string get_prev_command()
 			{
-				if(std::distance(prev_command, prev_commands.end()))
-					return *(prev_command++);
-				else
+				if(prev_commands.empty())
 					return "";
+
+				std::string value = *prev_command;
+
+				if(++prev_command == prev_commands.end())  
+					prev_command = --prev_command;
+
+				return value;
 			}
 
 		private:
@@ -88,8 +93,8 @@ namespace cmh
 				while(comlog.is_open() && std::getline(comlog, command))
 				{
 					prev_commands.push_back(command);
-					prev_command = prev_commands.begin();
-				}		
+				}
+				prev_command = prev_commands.begin();		
 
 				comlog.clear();	
 				comlog.seekg(0);
