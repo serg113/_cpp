@@ -4,11 +4,21 @@
 
 namespace cmh
 {
+	/**
+	 * todo: 
+	 * 	1. limit commands count to 10
+	 * 	2. get commands in reversed order
+	 */
 
 	class CommandHistoryManager
 	{
-		//std::string comlogfile;
-		std::fstream comlog;
+		public:
+			bool end_of_log {false};
+
+		private:
+		
+			std::fstream comlog;
+
 
 		public:
 			CommandHistoryManager(){};
@@ -17,9 +27,12 @@ namespace cmh
 			{
 				init(file_path);
 			}
+			
 			~CommandHistoryManager()
 			{
-
+				comlog.close();
+				
+				std::cout << "~CommnadHistoryManager(): comlog->closed" << std::endl;
 			}
 
 			void open(const std::string & file_path)
@@ -42,8 +55,13 @@ namespace cmh
 				
 				std::string command;
 				
-
 				std::getline(comlog, command);
+				
+				if(comlog.eof()==1) 
+				{
+					std::cout << "[end of file]" << std::endl;
+					end_of_log = true;
+				}
 
 				return command;
 			}
@@ -73,17 +91,15 @@ int main()
 
 	std::string command;
 	
-	std::cout << "write 3 commands below to save" << std::endl;
+	std::cout << "write command here ~/ ";
 
-	for(int i = 0; i < 3; i++)
+	std::cin >> command;
+
+	hist_manager.save_command(command);
+
+	while(!hist_manager.end_of_log)
 	{
-		std::cin >> command;
-
-		hist_manager.save_command(command);
+		std::cout << "written command ~/ " << hist_manager.get_prev_command() << std::endl;
 	}
-
-	for(int i = 0; i < 3; i++)
-		std::cout << "previous command ~ " << hist_manager.get_prev_command() << std::endl;
-
 
 }
