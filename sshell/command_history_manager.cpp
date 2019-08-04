@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <list>
+#include <iterator>
 
 namespace cmh
 {
@@ -23,7 +24,6 @@ namespace cmh
 			std::list<std::string> prev_commands;
 			std::list<std::string>::iterator prev_command = prev_commands.begin();
 			
-			//bool comlog_is_open {false};
 
 		public:
 			CommandHistoryManager(){};
@@ -67,8 +67,11 @@ namespace cmh
 			}
 
 			std::string get_prev_command()
-			{			
-				return *(++prev_command);
+			{
+				if(std::distance(++prev_command, prev_commands.end()))
+					return *prev_command;
+				else
+					return "";
 			}
 
 		private:
@@ -76,10 +79,13 @@ namespace cmh
 			{
 				if(!comlog.is_open())
 					comlog.open(file_path, std::fstream::in | std::fstream::out);
+
+				if(!comlog.is_open())
+					comlog.open(file_path, std::fstream::in | std::fstream::out | std::fstream::trunc);
 				
 				std::string command;
 
-				while(std::getline(comlog, command))
+				while(comlog.is_open() && std::getline(comlog, command))
 				{
 					prev_commands.push_back(command);
 				}		
@@ -103,6 +109,11 @@ int main()
 		std::cerr << msg << std::endl;	
 	}
 
+	for(int i = 0; i < 3; i++)
+		
+		std::cout << "is in last three commands: " << hist_manager.get_prev_command() << std::endl;
+
+
 	std::string command;
 
 	for(int i = 0; i < 2; ++i)
@@ -114,7 +125,7 @@ int main()
 
 		hist_manager.save_command(command);
 	
-		std::cout << "written command: " << hist_manager.get_prev_command() << std::endl;
+		std::cout << "previous command was: " << hist_manager.get_prev_command() << std::endl;
 	}
 	hist_manager.close();
 
