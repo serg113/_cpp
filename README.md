@@ -1,6 +1,6 @@
 # training samples
 
-There are examples written during training c++ skills.
+Examples written during training c++ skills.
 
 Starting at April 2019.
 
