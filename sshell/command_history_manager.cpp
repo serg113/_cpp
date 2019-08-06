@@ -7,8 +7,9 @@
 namespace cmh
 {
 	/**
-	 * todo:
-	 * 	1. limit commands count to 10
+	 * todo: priority:
+	 *    1.	0. on open call need to close opened file, and open new one
+	 *    2. 	2. limit commands count to 10
 	 * 	
 	 */
 
@@ -90,7 +91,7 @@ namespace cmh
 				
 				std::string command;
 
-				while(comlog.is_open() && std::getline(comlog, command))
+				while(std::getline(comlog, command))
 				{
 					prev_commands.push_back(command);
 				}
