@@ -1,26 +1,27 @@
 # include <iostream>
 # include <list>
-# include <unordered_set>
+
 
 /**
- * this function removes duplicates in list of items
+ * this function removes duplicates from list of items
  * based on "<" comparator, like structuring bynary tree, 
  * so output values are sorted in ascending order
  *
- * what is need to improve:
+ * issues:
  * 
- * 1. the sorting algorithms are based on random access iterators, 
+ * 1. sorting algorithms are based on random access iterators, 
  * 	reason became clear for me after I try to sort std::list here
- * 	the std::advance function needs to take linear time to access middle of array, 
+ * 	the std::advance function needs to take O(n/2) time to access middle of array, 
  * 	
- * 	in case of random access iterator it will take constant time, but  insertion will take linear time, 
+ * 	in case of random access iterator it will take constant time, 
+ * 	but insertion (in std::vector) will take linear time, 
  *
- * 	so current approach complexity can be counted:
- *	1. there are N elements in array, so at first we iterate array that is O(N) linear time
- *	2. then we insert an element to list each element in O(log(n)) steps
- *	3. but each insertion need to be by advansed iterator by std::advance(it, x), where x decrease as O(log(N))
+ * 	so complexity of current approach can be derived:
+ *	1. there are N elements in array, so at first we iterate an array that is O(N) - linear time complexity
+ *	2. then we insert an element to list each element in O(log(N)) steps
+ *	3. at each insertion iterator need to std::advance(it, x), where x decrease as O(log(N))
  *
- *	so if I not make a mistake, in sum we have n*log(n)*log(n) complexity
+ *	so if I count in the right way, we have N*log(N)*log(N) complexity
  * 	
  * 2.
  *
@@ -98,6 +99,7 @@ std::list<T> remove_duplicates(std::list<T> & lst)
 				std::cout << "<<!!!>> duplicate: " << item << ", steps: "<< count << std::endl;
 				break;
 			}
+
 			if(is_inserted)
 				std::cout << "inserted item: " << item << ", steps: " << count << std::endl;
 				
@@ -120,11 +122,9 @@ int main()
 	std::cout << "*** start_s_s ***" << std::endl;
 	
 	std::list<int> lst { 1, 5, 3, 4, 3, 2, 1, 9, 0, 10, 15, 20, 7, 6, 30, 7, 20, 12, 1, 5, 9, 13, 11, 17, 22 };
-	print_list(lst);
 
-	//std::unordered_set<int> set(lst.begin(), lst.end());
-	auto set = remove_duplicates(lst);
+	auto filtered = remove_duplicates(lst);
 
 	print_list(lst);
-	print_list(set);
+	print_list(filtered);
 }
