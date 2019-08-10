@@ -8,20 +8,18 @@ namespace cmh
 {
 	/**
 	 * todo: priority:
-	 *    1.	0. on open call need to close opened file, and open new one
-	 *    2. 	2. limit commands count to 10
+	 *    
+	 *    2. 	1. limit commands count to 10
 	 * 	
 	 */
 
 	class CommandHistoryManager
 	{
-		public:
-			bool end_of_log {false};
-		
 		private:
 			std::string log_file;
 		
 			std::fstream comlog;
+		
 			std::list<std::string> prev_commands;
 			std::list<std::string>::iterator prev_command = prev_commands.begin();
 			
@@ -35,26 +33,31 @@ namespace cmh
 			}
 			
 			~CommandHistoryManager()
-			{
-				close();
-				
-				std::cout << "~CommnadHistoryManager(): comlog->closed" << std::endl;
+			{		
+				std::cout << "[cmh]: ~CommnadHistoryManager()" << std::endl;
+			
+				save_history();
 			}
 
 			void open(const std::string & file_path)
 			{
+				if(file_path != log_file)
+					save_history();
+
 				init(file_path);
 			}
 
-			void close()
+			void save_history()
 			{
 				if(comlog.is_open())
 				{
+					std::cout << "[cmh]: save_history(), writing commands to file" << std::endl;
+
 					for(auto command : prev_commands)
 					{
 						comlog << command << std::endl;
 
-						std::cout << "written row: " << command << std::endl;
+						std::cout << "written command: " << command << std::endl;
 					}
 					comlog.close();
 				}
@@ -72,17 +75,19 @@ namespace cmh
 				if(prev_commands.empty())
 					return "";
 
-				std::string value = *prev_command;
+				std::string ret_value = *prev_command;
 
 				if(++prev_command == prev_commands.end())  
-					prev_command = --prev_command;
+					--prev_command;
 
-				return value;
+				return ret_value;
 			}
 
 		private:
 			void init(const std::string & file_path)
 			{
+				log_file = file_path;
+
 				if(!comlog.is_open())
 					comlog.open(file_path, std::fstream::in | std::fstream::out);
 
@@ -107,18 +112,13 @@ int main()
 {
 	std::string file = "command.log";
 
-	cmh::CommandHistoryManager hist_manager;
+	cmh::CommandHistoryManager m_history(file);
 
-	try{
-		hist_manager.open(file);
-	}
-	catch(const char* msg){
-		std::cerr << msg << std::endl;	
-	}
 
+	std::cout << "last three commands: ";
 	for(int i = 0; i < 3; i++)
-		
-		std::cout << "is in last three commands: " << hist_manager.get_prev_command() << std::endl;
+		std::cout << m_history.get_prev_command() << " >>> ";
+	std::cout << std::endl << std::endl;
 
 
 	std::string command;
@@ -130,15 +130,9 @@ int main()
 
 		std::cin >> command;
 
-		hist_manager.save_command(command);
+		m_history.save_command(command);
 	
-		std::cout << "previous command was: " << hist_manager.get_prev_command() << std::endl;
+		std::cout << "previous command was: " << m_history.get_prev_command() << std::endl;
 	}
-	hist_manager.close();
-
-	/*while(!hist_manager.end_of_log)
-	{
-		std::cout << "written command ~/ " << hist_manager.get_prev_command() << std::endl;
-	}*/
 
 }
