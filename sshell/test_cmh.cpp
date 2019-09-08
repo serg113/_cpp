@@ -1,6 +1,8 @@
 # include <string>
 # include "command_history_manager.h"
 
+// compile: g++ -o test_h test_cmh.cpp command_history_manager.cpp 
+
 int main()
 {
 	std::string log_file = "command.log";
