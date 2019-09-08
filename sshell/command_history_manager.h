@@ -13,19 +13,19 @@ namespace cmh
 	{
 		public:
 			CommandHistoryManager();
-			CommandHistoryManager(const std::string& file_path);
+			CommandHistoryManager(const std::string&);
 			~CommandHistoryManager();
 
-			void open(const std::string& file_path);
+			void open(const std::string&);
 			void save_history();
-			void save_command(const std::string& command);
+			void save_command(const std::string&);
 			std::string get_prev_command();
 		private:
 			std::string log_file;
 			std::fstream comlog;
 			std::list<std::string> prev_commands;
 			std::list<std::string>::iterator prev_command;
-			void init(const std::string& file_path);
+			void init(const std::string&);
 	};
 }
 
