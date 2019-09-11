@@ -2,7 +2,7 @@
 * Fibonacci numbers are calculated as F(n) = F(n-1) + F(n-2)
 * with condition, that F(0) = 0 and F(1) = 1
 * but interesting case is with memoization - dynamic programming
-* with memoization we can compute range of Fibonacci numbers very fast
+* memoization optimizes Fibonacci numbers calculation in the case when we have range of numbers
 */
 
 #include <iostream>
