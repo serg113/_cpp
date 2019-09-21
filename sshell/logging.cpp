@@ -17,7 +17,7 @@ public:
 
     virtual const char* what() const throw()
     {
-        return &error_message[0];
+        return error_message.c_str();
     }
 };
 
@@ -36,7 +36,8 @@ public:
 
     ~Logger()
     {
-        log_file.close();
+        if(log_file.is_open())
+            log_file.close();
     }
 
     init(const std::string& file_path, LogWritingMode mode, bool verbose = true)
@@ -70,37 +71,52 @@ public:
         }
     }
 
-    info(const std::string& message)
+    info(const std::string& message) throw()
     {
-        write_log_message(LogLevel::info, message);
+        try
+        {
+            write_log_message(LogLevel::info, message);
+        }
+        catch(std::exception& err)
+        {
+            std::cerr << err.what() << std::endl;
+        }
     }
 
-    error(const std::string& message)
+    error(const std::string& message) throw()
     {
-        write_log_message(LogLevel::error, message);
+        try
+        {
+            write_log_message(LogLevel::error, message);
+        }
+        catch(std::exception& err)
+        {
+            std::cerr << err.what() << std::endl;
+        }
     }
 
 private:
     write_log_message(const LogLevel lv, const std::string& message)
     {
         if(!log_file.is_open())
-            throw LogError("log file is not open to write message");
+            throw LogError("there is no open file to write message");
 
         switch(lv)
         {
             case LogLevel::info:
-                log_file << "[info] ";
-                if(verbose_) std::cout << "[error] ";
+                log_file << "[info] " << message << std::endl;
+
+                if(verbose_)
+                    std::cerr << "[info] " << message << std::endl;
                 break;
+
             case LogLevel::error:
-                log_file << "[error] ";
-                if(verbose_) std::cout << "[error] ";
+                log_file << "[error] " << message << std::endl;
+
+                if(verbose_)
+                    std::cerr << "[error] " << message << std::endl;
                 break;
         }
-        log_file << message << std::endl;
-
-        if(verbose_)
-            std::cout << message << std::endl;
     }
 };
 
@@ -110,11 +126,11 @@ int main()
 
     try
     {
-        log.init("hello.log", LogWritingMode::write);
+        log.init("hel\\lo.log", LogWritingMode::write);
     }
     catch(std::exception& ex)
     {
-        std::cout << ex.what() << std::endl;
+        std::cerr << ex.what() << std::endl;
     }
 
     log.info("hello");
