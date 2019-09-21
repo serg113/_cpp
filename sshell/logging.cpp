@@ -57,7 +57,7 @@ public:
                     if(verbose_)
                         std::cout << "[info] Logger(), opened file: " << file_path << std::endl;
                 }
-                catch(std::exception& ex)
+                catch(const std::exception& ex)
                 {
                     if(verbose_)
                         std::cout << "[error] Logger(), provided path: " << file_path << ", " << ex.what() << std::endl;
@@ -77,7 +77,7 @@ public:
         {
             write_log_message(LogLevel::info, message);
         }
-        catch(std::exception& err)
+        catch(const std::exception& err)
         {
             std::cerr << err.what() << std::endl;
         }
@@ -89,7 +89,7 @@ public:
         {
             write_log_message(LogLevel::error, message);
         }
-        catch(std::exception& err)
+        catch(const std::exception& err)
         {
             std::cerr << err.what() << std::endl;
         }
@@ -128,7 +128,7 @@ int main()
     {
         log.init("hel\\lo.log", LogWritingMode::write);
     }
-    catch(std::exception& ex)
+    catch(const std::exception& ex)
     {
         std::cerr << ex.what() << std::endl;
     }
