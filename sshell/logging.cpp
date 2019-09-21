@@ -21,7 +21,19 @@ public:
     }
 };
 
-enum class LogLevel {info = 1, error = 2, warning = 4, debug = 8};
+enum class LogLevel {info = 1, error = 2, warning = 4};
+
+std::ostream& operator<<(std::ostream& stream, LogLevel lv)
+{
+    switch(lv)
+    {
+        case LogLevel::info: stream << "info";  break;
+        case LogLevel::error: stream << "error"; break;
+        case LogLevel::warning: stream << "warning"; break;
+        default : stream.setstate(std::ios_base::failbit);
+    }
+    return stream;
+}
 
 enum class LogWritingMode {write = 1, append = 2};
 
@@ -55,12 +67,13 @@ public:
                         throw LogError("cannot open the file");
 
                     if(verbose_)
-                        std::cout << "[info] Logger(), opened file: " << file_path << std::endl;
+                        std::cout << "[" << LogLevel::info << "] Logger(), opened file: " << file_path << std::endl;
                 }
                 catch(const std::exception& ex)
                 {
                     if(verbose_)
-                        std::cout << "[error] Logger(), provided path: " << file_path << ", " << ex.what() << std::endl;
+                        std::cout << "[" << LogLevel::error << "] Logger(), provided path: "
+                                    << file_path << ", " << ex.what() << std::endl;
 
                     throw LogError(ex.what());
                 }
@@ -101,22 +114,10 @@ private:
         if(!log_file.is_open())
             throw LogError("there is no open file to write message");
 
-        switch(lv)
-        {
-            case LogLevel::info:
-                log_file << "[info] " << message << std::endl;
+        log_file << "[" << lv << "] " << message << std::endl;
 
-                if(verbose_)
-                    std::cerr << "[info] " << message << std::endl;
-                break;
-
-            case LogLevel::error:
-                log_file << "[error] " << message << std::endl;
-
-                if(verbose_)
-                    std::cerr << "[error] " << message << std::endl;
-                break;
-        }
+        if(verbose_)
+            std::cerr << "[" << lv << "] " << message << std::endl;
     }
 };
 
