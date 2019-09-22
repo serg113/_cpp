@@ -84,7 +84,7 @@ public:
         }
     }
 
-    info(const std::string& message) throw()
+    info(const std::string& message) noexcept
     {
         try
         {
@@ -96,7 +96,7 @@ public:
         }
     }
 
-    error(const std::string& message) throw()
+    error(const std::string& message) noexcept
     {
         try
         {
@@ -112,7 +112,7 @@ private:
     write_log_message(const LogLevel lv, const std::string& message)
     {
         if(!log_file.is_open())
-            throw LogError("there is no open file to write message");
+            throw LogError("*** there is no open file to write message");
 
         log_file << "[" << lv << "] " << message << std::endl;
 
