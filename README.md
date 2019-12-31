@@ -1,14 +1,10 @@
 # training samples
 
-Examples written during training c++ skills.
+Examples written during training c++ skills, starting at April 2019.
 
-Starting at April 2019.
+To keep track of progress I have not changed old samples.
 
-Destination: complete "s_shell/" composed parts till October 1.
+In September I have added sshell/ folder with aim to create complete application, but... plans changed.
 
-    1. command history manager +
-    2. logging manager + 
-    3. file manager -
-    4. directories manager -
-    5. authentification (client to server) - 
+Recently added folder is ssh_app/.
 
