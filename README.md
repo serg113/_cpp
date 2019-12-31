@@ -2,9 +2,7 @@
 
 Examples written during training c++ skills, starting at April 2019.
 
-To keep track of progress I have not changed old samples.
-
-In September I have added sshell/ folder with aim to create complete application, but... plans changed.
+In September sshell/ folder have been added.
 
 Recently added folder is ssh_app/.
 
