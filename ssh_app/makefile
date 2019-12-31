@@ -1,15 +1,15 @@
 
-LIB_VS=..\ssh_library
-APP_DIR = .\ssh_app.exe
+LIB_SSH = ..\ssh_library
+APP = .\ssh_app.exe
 
-ssh_app: main.obj Session.obj
-		link /out:$(APP_DIR) $(LIB_VS)\*.lib  .\*.obj 
+ssh_app: main.obj session.obj
+		link /out:$(APP) $(LIB_SSH)\ssh.lib  .\*.obj 
 		 
-main.obj: ..\main.cpp ..\Session.h 
+main.obj: ..\main.cpp ..\session.h 
 		cl /c /EHsc ..\main.cpp   
 		
-Session.obj: ..\Session.cpp ..\Session.h $(LIB_VS)/libssh/libssh.h $(LIB_VS)/libssh/sftp.h
-		cl /c /EHsc ..\Session.cpp 
+session.obj: ..\session.cpp ..\session.h $(LIB_SSH)\libssh\libssh.h $(LIB_SSH)\libssh\sftp.h
+		cl /c /EHsc ..\session.cpp 
 
 clean: 
 		del *.obj
