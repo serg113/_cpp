@@ -16,7 +16,7 @@ class Session
 {
 
 public:
-	Session();
+	static Session Create();
 
 	~Session();
 
@@ -28,11 +28,16 @@ public:
 
 	Session& SendFile(const std::string &source,
 						const std::string &destination, 
-										int access_type, 
-											int permissions,
-												bool create_dir = true);
+							int access_type, 
+								int permissions,
+									bool create_dir = false);
 
 private:
+	Session();
+	Session& operator=(const Session& sess) = default;
+	Session(const Session& sess) = default;
+	
+
 	ssh_session session;
 	sftp_session sftp;
 

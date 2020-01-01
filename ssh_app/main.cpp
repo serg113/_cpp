@@ -46,14 +46,13 @@ int main(int argc, char* argv[])
 	}
 	std::string dest_dir = dest_file.substr(0, dest_file.find_last_of("/\\"));
 
-	Session session;
-
 	try
 	{
-		session.Connect(host, port)
-			.Login(login, passw)
-			//.CreateDir(dest_dir, folder_permissions)
-			.SendFile(source_file, dest_file, file_access_type, file_permissions);
+		Session::Create()
+			.Connect(host, port)
+				.Login(login, passw)
+					.CreateDir(dest_dir, folder_permissions)
+						.SendFile(source_file, dest_file, file_access_type, file_permissions);
 	}
 	catch (std::exception &ex)
 	{

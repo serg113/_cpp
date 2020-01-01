@@ -1,14 +1,22 @@
 #include "Session.h"
 
 
+
+Session Session::Create()
+{
+	return Session();
+}
+
 Session::Session()
 {
+	std::cout << "--->>> session created" << std::endl;
 	session = NULL;
 	sftp = NULL;
-};
+}
 
 Session::~Session()
 {
+	std::cout << "---<<< session deleted" << std::endl;
 	if (sftp != NULL)
 	{
 		sftp_free(sftp);
@@ -20,7 +28,6 @@ Session::~Session()
 		ssh_free(session);
 	}
 }
-
 
 Session& Session::Connect(const std::string &host, int port)
 {
