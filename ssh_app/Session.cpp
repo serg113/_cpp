@@ -1,7 +1,11 @@
 #include "Session.h"
 
 
-Session::Session() {};
+Session::Session()
+{
+	session = NULL;
+	sftp = NULL;
+};
 
 Session::~Session()
 {
@@ -60,6 +64,8 @@ Session& Session::CreateDir(const std::string &dir, int permissions)
 {
 	InitSftp();
 
+	//std::replace(remote_file.begin(), remote_file.end(), '\\', '/');
+
 	std::size_t first_pos = 0, second_pos;
 
 	while (true)
@@ -68,9 +74,9 @@ Session& Session::CreateDir(const std::string &dir, int permissions)
 
 		if (second_pos != std::string::npos || dir.substr(first_pos).size() > 0)
 		{
-			int rc = sftp_mkdir(sftp, dir.substr(0, second_pos).c_str(), permissions);
+			int rsp = sftp_mkdir(sftp, dir.substr(0, second_pos).c_str(), permissions);
 
-			if (rc != SSH_OK)
+			if (rsp != SSH_OK)
 			{
 				if (sftp_get_error(sftp) != SSH_FX_FILE_ALREADY_EXISTS)
 					std::cout << "[info] directory already exists: "
@@ -94,9 +100,12 @@ Session& Session::CreateDir(const std::string &dir, int permissions)
 	return *this;
 }
 
-Session& Session::SendFile(const std::string &source, const std::string &destination, int access_type, int permissions)
+Session& Session::SendFile(const std::string &source, const std::string &destination, int access_type, int permissions, bool create_dir)
 {
 	InitSftp();
+
+	if (create_dir and destination.find_last_of("/\\") != std::string::npos)
+		this->CreateDir(destination.substr(0, destination.find_last_of("/\\")), permissions);
 
 	sftp_file remote_file = sftp_open(sftp, destination.c_str(), access_type, permissions);
 
@@ -109,7 +118,21 @@ Session& Session::SendFile(const std::string &source, const std::string &destina
 
 	if (local_file.is_open())
 	{
-		std::string chunk;
+		std::vector<char> buffer(24, 0); // need to set to max size
+
+		while (!local_file.eof()) {
+
+			local_file.read(buffer.data(), buffer.size());
+
+			std::size_t written_bytes = sftp_write(remote_file, buffer.data(), local_file.gcount());
+
+			if (written_bytes != local_file.gcount())
+				throw std::exception("cannot write to remote file");
+
+			for (int i = 0; i < local_file.gcount(); ++i) { std::cout << buffer[i]; } std::cout << std::endl;
+		}
+
+		/*std::string chunk;
 
 		while (std::getline(local_file, chunk))
 		{
@@ -119,8 +142,10 @@ Session& Session::SendFile(const std::string &source, const std::string &destina
 
 			if (written_bytes != chunk.size())
 				throw std::exception("cannot write to remote file");
-		}
+		}*/
 	}
+
+	local_file.close();
 	sftp_close(remote_file);
 
 	return *this;
