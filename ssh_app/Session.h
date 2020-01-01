@@ -2,12 +2,11 @@
 #include <string>
 #include <fstream>
 #include <exception>
+#include <vector>
+#include <algorithm>
 
-#include "ssh_library/libssh/libssh.h"
-#include "ssh_library/libssh/sftp.h"
-
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "ssh_library\libssh\libssh.h"
+#include "ssh_library\libssh\sftp.h"
 
 
 #ifndef SA_SESSION_H
@@ -28,11 +27,15 @@ public:
 	Session& CreateDir(const std::string &dir, int permissions);
 
 	Session& SendFile(const std::string &source,
-						const std::string &destination, int access_type, int permissions);
+						const std::string &destination, 
+										int access_type, 
+											int permissions,
+												bool create_dir = true);
 
 private:
 	ssh_session session;
 	sftp_session sftp;
+
 	void InitSftp();
 };
 
