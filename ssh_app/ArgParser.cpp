@@ -1,7 +1,8 @@
 #include "ArgParser.h"
 
+ArgParser::ArgParser() {};
 
-ArgParser::ArgParser(const std::vector<std::string> & args)
+bool ArgParser::ProcessArgs(const std::vector<std::string> & args)
 {
 	if (args.size() == 1)
 	{
@@ -37,7 +38,7 @@ ArgParser::ArgParser(const std::vector<std::string> & args)
 		std::cout << "type -h or --help to see the list of available commands" << std::endl;
 	}
 
-
+	return parsing_succeed;
 }
 
 std::string ArgParser::get_source_path() const
@@ -47,8 +48,4 @@ std::string ArgParser::get_source_path() const
 std::string ArgParser::get_destination_path() const
 {
 	return remote_file;
-}
-bool ArgParser::is_command_parsed() const
-{
-	return parsing_succeed;
 }

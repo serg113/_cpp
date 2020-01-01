@@ -1,31 +1,28 @@
 //#include <sys/stat.h>
 #include <fcntl.h>
 #include <vector>
+#include <string>
 
 #include "ArgParser.h"
 #include "Session.h"
 
 
-
 int main(int argc, char* argv[])
 {
-	bool on_debug = true;
+	bool is_cmd_used = (argc > 1);
 
-	if (argc > 1)
-		on_debug = false;
+	ArgParser parser;
 
-	std::vector<std::string> arg_values;
-
-	for (int i = 1; i < argc; ++i)
+	if (is_cmd_used)
 	{
-		arg_values.emplace_back(std::string(argv[i]));
+		std::vector<std::string> arg_values;
+
+		for (int i = 1; i < argc; ++i)
+			arg_values.emplace_back(std::string(argv[i]));
+
+		if(!parser.ProcessArgs(arg_values))
+			return 0;
 	}
-
-	ArgParser args(arg_values);
-
-	if (!args.is_command_parsed() && !on_debug)
-		return 0;
-	
 
 	std::string host = "127.0.0.1";
 	int port = 8887;
@@ -39,21 +36,18 @@ int main(int argc, char* argv[])
 	std::string source_file;
 	std::string dest_file;
 
-	if (on_debug)
-	{
+	if (is_cmd_used){
+		source_file = parser.get_source_path();
+		dest_file = parser.get_destination_path();
+	} 
+	else {
 		source_file = "./test_file.dat";
 		dest_file = "f1/f2/test_dest.dat";
 	}
-	else
-	{
-		source_file = args.get_source_path();
-		dest_file = args.get_destination_path();
-	}
 	std::string dest_dir = dest_file.substr(0, dest_file.find_last_of("/\\"));
 
-	std::cout << source_file << " : " << dest_file << std::endl;
-
 	Session session;
+
 	try
 	{
 		session.Connect(host, port)

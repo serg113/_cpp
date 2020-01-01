@@ -104,7 +104,7 @@ Session& Session::SendFile(const std::string &source, const std::string &destina
 {
 	InitSftp();
 
-	if (create_dir and destination.find_last_of("/\\") != std::string::npos)
+	if (create_dir && destination.find_last_of("/\\") != std::string::npos)
 		this->CreateDir(destination.substr(0, destination.find_last_of("/\\")), permissions);
 
 	sftp_file remote_file = sftp_open(sftp, destination.c_str(), access_type, permissions);

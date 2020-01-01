@@ -9,11 +9,11 @@
 class ArgParser
 {
 public:
-	ArgParser(const std::vector<std::string> &args);
+	ArgParser();
+	bool ProcessArgs(const std::vector<std::string> &args);
 
 	std::string get_source_path() const;
 	std::string get_destination_path() const;
-	bool is_command_parsed() const;
 
 private:
 	std::string local_file;
