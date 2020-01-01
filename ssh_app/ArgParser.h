@@ -18,7 +18,9 @@ public:
 private:
 	std::string local_file;
 	std::string remote_file;
-	bool parsing_succeed = false;
+
+	void PrintHelp() const;
+	void PrintHelpHint() const;
 
 };
 
