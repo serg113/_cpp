@@ -16,8 +16,8 @@ public:
 	std::string get_destination_path() const;
 
 private:
-	std::string local_file;
-	std::string remote_file;
+	std::string local_file_;
+	std::string remote_file_;
 
 	void PrintHelp() const;
 	void PrintHelpHint() const;

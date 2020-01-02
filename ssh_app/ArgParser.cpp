@@ -16,11 +16,11 @@ bool ArgParser::ProcessArgs(const std::vector<std::string> & args)
 	{
 		if (args[0] == "-rmcopy")
 		{
-			local_file = args[1];
-			remote_file = args[2];
+			local_file_ = args[1];
+			remote_file_ = args[2];
 
-			std::replace(local_file.begin(), local_file.end(), '\\', '/');
-			std::replace(remote_file.begin(), remote_file.end(), '\\', '/');
+			std::replace(local_file_.begin(), local_file_.end(), '\\', '/');
+			std::replace(remote_file_.begin(), remote_file_.end(), '\\', '/');
 
 			return true;
 		}			
@@ -33,11 +33,11 @@ bool ArgParser::ProcessArgs(const std::vector<std::string> & args)
 
 std::string ArgParser::get_source_path() const
 {
-	return local_file;
+	return local_file_;
 }
 std::string ArgParser::get_destination_path() const
 {
-	return remote_file;
+	return remote_file_;
 }
 
 void ArgParser::PrintHelpHint() const
