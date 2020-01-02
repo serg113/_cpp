@@ -14,11 +14,8 @@
 
 class Session
 {
-
 public:
-	static Session Create();
-
-	~Session();
+	friend Session CreateSession();
 
 	Session& Connect(const std::string &host, int port);
 
@@ -26,24 +23,26 @@ public:
 
 	Session& CreateDir(const std::string &dir, int permissions);
 
-	Session& SendFile(const std::string &source,
+	Session& SendFile(const std::string &source, 
 						const std::string &destination, 
 							int access_type, 
-								int permissions,
+								int permissions, 
 									bool create_dir = false);
+
+	~Session();
 
 private:
 	Session();
-	Session& operator=(const Session& sess) = default;
 	Session(const Session& sess) = default;
+	Session& operator=(const Session& sess) = default;
 	
-
-	ssh_session session;
-	sftp_session sftp;
+	ssh_session session_;
+	sftp_session sftp_;
 
 	void InitSftp();
 };
 
+Session CreateSession();
 
 
-#endif //SA_SESSION_H
+#endif // SA_SESSION_H

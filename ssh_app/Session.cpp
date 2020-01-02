@@ -1,8 +1,7 @@
 #include "Session.h"
 
 
-
-Session Session::Create()
+Session CreateSession()
 {
 	return Session();
 }
@@ -10,38 +9,38 @@ Session Session::Create()
 Session::Session()
 {
 	std::cout << "--->>> session created" << std::endl;
-	session = NULL;
-	sftp = NULL;
+	session_ = NULL;
+	sftp_ = NULL;
 }
 
 Session::~Session()
 {
 	std::cout << "---<<< session deleted" << std::endl;
-	if (sftp != NULL)
+	if (sftp_ != NULL)
 	{
-		sftp_free(sftp);
+		sftp_free(sftp_);
 	}
 
-	if (session != NULL)
+	if (session_ != NULL)
 	{
-		ssh_disconnect(session);
-		ssh_free(session);
+		ssh_disconnect(session_);
+		ssh_free(session_);
 	}
 }
 
 Session& Session::Connect(const std::string &host, int port)
 {
-	session = ssh_new();
+	session_ = ssh_new();
 
-	if (session == NULL)
+	if (session_ == NULL)
 		throw std::exception("ssh session has not been initialized");
 
-	ssh_options_set(session, SSH_OPTIONS_HOST, host.c_str());
-	ssh_options_set(session, SSH_OPTIONS_PORT, &port);
-	//ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verb);
+	ssh_options_set(session_, SSH_OPTIONS_HOST, host.c_str());
+	ssh_options_set(session_, SSH_OPTIONS_PORT, &port);
+	//ssh_options_set(session_, SSH_OPTIONS_LOG_VERBOSITY, &verb);
 	//ssh_options_set(ssh_session_, SSH_OPTIONS_USER, "user");
 
-	if (ssh_connect(session) == SSH_OK)
+	if (ssh_connect(session_) == SSH_OK)
 	{
 		std::cout << "[ok] successfully connected" << std::endl;
 	}
@@ -55,7 +54,7 @@ Session& Session::Connect(const std::string &host, int port)
 
 Session& Session::Login(const std::string &login, const std::string &password)
 {
-	if (ssh_userauth_password(session, NULL, password.c_str()) == SSH_AUTH_SUCCESS)
+	if (ssh_userauth_password(session_, NULL, password.c_str()) == SSH_AUTH_SUCCESS)
 	{
 		std::cout << "[ok] successfully authorized" << std::endl;
 	}
@@ -81,11 +80,11 @@ Session& Session::CreateDir(const std::string &dir, int permissions)
 
 		if (second_pos != std::string::npos || dir.substr(first_pos).size() > 0)
 		{
-			int rsp = sftp_mkdir(sftp, dir.substr(0, second_pos).c_str(), permissions);
+			int rsp = sftp_mkdir(sftp_, dir.substr(0, second_pos).c_str(), permissions);
 
 			if (rsp != SSH_OK)
 			{
-				if (sftp_get_error(sftp) != SSH_FX_FILE_ALREADY_EXISTS)
+				if (sftp_get_error(sftp_) != SSH_FX_FILE_ALREADY_EXISTS)
 					std::cout << "[info] directory already exists: "
 					<< dir.substr(0, second_pos) << std::endl;
 			}
@@ -114,7 +113,7 @@ Session& Session::SendFile(const std::string &source, const std::string &destina
 	if (create_dir && destination.find_last_of("/\\") != std::string::npos)
 		this->CreateDir(destination.substr(0, destination.find_last_of("/\\")), permissions);
 
-	sftp_file remote_file = sftp_open(sftp, destination.c_str(), access_type, permissions);
+	sftp_file remote_file = sftp_open(sftp_, destination.c_str(), access_type, permissions);
 
 	if (remote_file == NULL)
 		throw std::exception("cannot open remote file");
@@ -138,18 +137,6 @@ Session& Session::SendFile(const std::string &source, const std::string &destina
 
 			for (int i = 0; i < local_file.gcount(); ++i) { std::cout << buffer[i]; } std::cout << std::endl;
 		}
-
-		/*std::string chunk;
-
-		while (std::getline(local_file, chunk))
-		{
-			std::cout << chunk << std::endl;
-
-			std::size_t written_bytes = sftp_write(remote_file, chunk.c_str(), chunk.size());
-
-			if (written_bytes != chunk.size())
-				throw std::exception("cannot write to remote file");
-		}*/
 	}
 
 	local_file.close();
@@ -160,14 +147,14 @@ Session& Session::SendFile(const std::string &source, const std::string &destina
 
 void Session::InitSftp()
 {
-	if (sftp != NULL)
+	if (sftp_ != NULL)
 		return;
 
-	sftp = sftp_new(session);
+	sftp_ = sftp_new(session_);
 
-	if (sftp == NULL)
+	if (sftp_ == NULL)
 		throw std::exception("cannot allocate sftp session");
 
-	if (sftp_init(sftp) != SSH_OK)
+	if (sftp_init(sftp_) != SSH_OK)
 		throw std::exception("cannot initialize sftp session");
 }

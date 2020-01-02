@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		Session::Create()
+		CreateSession()
 			.Connect(host, port)
 				.Login(login, passw)
 					.CreateDir(dest_dir, folder_permissions)
