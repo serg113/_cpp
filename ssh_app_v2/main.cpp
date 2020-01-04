@@ -6,12 +6,13 @@
 #include "ArgParser.h"
 #include "Session.h"
 
-
 int main(int argc, char* argv[])
 {
+	std::shared_ptr<Logger> logger_ = std::make_shared<Logger>();
+
 	bool is_cmd_used = (argc > 1);
 
-	ArgParser parser;
+	ArgParser parser(logger_);
 
 	if (is_cmd_used)
 	{
@@ -26,7 +27,7 @@ int main(int argc, char* argv[])
 
 	std::string host = "127.0.0.1";
 	int port = 8887;
-	std::string login = "admin";
+	std::string login = "not used";
 	std::string passw = "root";
 	
 	int access_type = O_WRONLY | O_CREAT | O_TRUNC; 
@@ -49,11 +50,12 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		Ssh().Connect(host, port)
-			.Login("user1", "root1")
+		Ssh().SetLogger(logger_)
+			.Connect(host, port)
+			.Login("sergey2", "root2")
 			.CreateDir(dir, perms)
 			.LogOut()
-			.Login("user2", "root2")
+			.Login("sergey3", "root3")
 			.SendFile(source, dest, access_type, perms);
 
 		// api usage sample 1
@@ -75,7 +77,7 @@ int main(int argc, char* argv[])
 	}
 	catch (std::exception &ex)
 	{
-		std::cout << "[error] " << ex.what() << std::endl;
+		logger_->error(ex.what());
 	}
 
 	std::cout << "Press Enter to exit." << std::endl;

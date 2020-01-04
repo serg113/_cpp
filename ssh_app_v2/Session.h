@@ -7,14 +7,13 @@
 		
  2.1 create session object and make chained calls to available functions
 	Ssh().Connect(host, port)
-		.Login(login, passw)
-			.CreateDir(dir, perms)
-				.SendFile(source, dest, access_type, perms);
+			.Login(login, passw)
+				.CreateDir(dir, perms)
+					.SendFile(source, dest, access_type, perms);
 
  2.2 initialize session object, connect to remote host, then use file transfer functions where you need
 	Ssh ssh;
-	auto& session = ssh.Connect(host, port)
-			.Login(login, passw);
+	auto& session = ssh.Connect(host, port).Login(login, passw);
 	...
 	for (auto& dir : dirs)
 	{
@@ -43,7 +42,6 @@
 #ifndef SA_SESSION_H
 #define SA_SESSION_H
 
-
 class Session : NotInitializedSession, InitializedSession
 {
 public:
@@ -62,7 +60,7 @@ public:
 	~Session();
 
 private:
-	Session();
+	Session(std::shared_ptr<Logger> logger);
 	Session(const Session& sess) = default;
 	Session& operator=(const Session& sess) = default;
 
@@ -73,8 +71,7 @@ private:
 	sftp_session sftp_;
 	std::string remote_host_;
 	int port_;
-	
-	Logger logger_;
+	std::shared_ptr<Logger> logger_;
 };
 
 
@@ -83,10 +80,12 @@ class Ssh
 public:
 	Ssh();
 	~Ssh();
+	Ssh& SetLogger(std::shared_ptr<Logger> logger);
 	NotInitializedSession& Connect(const std::string &host, int port);
 
 private:
 	Session* session_;
+	std::shared_ptr<Logger> logger_;
 };
 
 

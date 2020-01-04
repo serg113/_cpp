@@ -11,11 +11,11 @@ public:
 	virtual InitializedSession& CreateDir(const std::string &dir, int permissions) = 0;
 
 	virtual InitializedSession& SendFile(const std::string &source,
-						const std::string &destination,
-							int access_type,
-								int permissions,
-									bool create_dir = false
-										) = 0;
+		const std::string &destination,
+		int access_type,
+		int permissions,
+		bool create_dir = false
+	) = 0;
 	virtual NotInitializedSession& LogOut() = 0;
 };
 

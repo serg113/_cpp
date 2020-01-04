@@ -11,7 +11,10 @@
 class Logger
 {
 public:
-	void log(const std::string& msg);
+	void log(const std::string& msg) const;
+	void info(const std::string& msg) const;
+	void error(const std::string& msg) const;
+	void cmd(const std::string& msg) const;
 };
 
 #endif //SA_LOGGER_H

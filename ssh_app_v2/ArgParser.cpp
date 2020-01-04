@@ -1,6 +1,6 @@
 #include "ArgParser.h"
 
-ArgParser::ArgParser() {};
+ArgParser::ArgParser(std::shared_ptr<Logger> logger) : logger_(logger) {};
 
 bool ArgParser::ProcessArgs(const std::vector<std::string> & args)
 {
@@ -22,6 +22,8 @@ bool ArgParser::ProcessArgs(const std::vector<std::string> & args)
 			std::replace(local_file_.begin(), local_file_.end(), '\\', '/');
 			std::replace(remote_file_.begin(), remote_file_.end(), '\\', '/');
 
+			logger_->log("copy file: " + local_file_ + " to " + remote_file_);
+
 			return true;
 		}			
 	}
@@ -42,12 +44,12 @@ std::string ArgParser::get_destination_path() const
 
 void ArgParser::PrintHelpHint() const
 {
-	std::cout << "\n>***< type -h or --help to see the list of available commands" << std::endl;
+	logger_->cmd("type -h or --help to see the list of available commands");
 }
 
 void ArgParser::PrintHelp() const
 {
-	std::cout << "\n>***< currently implemented commands:" << std::endl;
-	std::cout << "---    ---   ---   ---" << std::endl;
-	std::cout << "ssh_app.exe -rmcopy [source path] [destination path] " << std::endl;
+	logger_->cmd("currently implemented commands:");
+	logger_->cmd("---    ---   ---   ---");
+	logger_->cmd("ssh_app.exe -rmcopy [source path] [destination path] ");
 }
