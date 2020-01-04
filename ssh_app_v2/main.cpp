@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 
 	std::string host = "127.0.0.1";
 	int port = 8887;
-	std::string login = "not used";
+	std::string login = "admin";
 	std::string passw = "root";
 	
 	int access_type = O_WRONLY | O_CREAT | O_TRUNC; 
@@ -49,21 +49,28 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		// api usage sample 1
 		Ssh().Connect(host, port)
-				.Login(login, passw)
-					.CreateDir(dir, perms)
-						.SendFile(source, dest, access_type, perms);
+			.Login("user1", "root1")
+			.CreateDir(dir, perms)
+			.LogOut()
+			.Login("user2", "root2")
+			.SendFile(source, dest, access_type, perms);
 
-		// api usage sample 2
-		Ssh ssh;
-		auto& session = ssh.Connect(host, port)
-								.Login(login, passw);
-		
-		for (auto& dir : dirs)
-		{
-			session.CreateDir(dir, perms);
-		}
+		// api usage sample 1
+		//Ssh().Connect(host, port)
+		//		.Login(login, passw)
+		//			.CreateDir(dir, perms)
+		//				.SendFile(source, dest, access_type, perms);
+
+		//// api usage sample 2
+		//Ssh ssh;
+		//auto& session = ssh.Connect(host, port)
+		//	.Login(login, passw);
+		//
+		//for (auto& dir : dirs)
+		//{
+		//	session.CreateDir(dir, perms);
+		//}
 		
 	}
 	catch (std::exception &ex)
