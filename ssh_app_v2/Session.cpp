@@ -18,14 +18,13 @@ NotInitializedSession& Ssh::Connect(const std::string &host, int port)
 
 Session::Session()
 {
-	std::cout << "--->>> session created" << std::endl;
 	session_ = NULL;
 	sftp_ = NULL;
+	logger_.log(">>> session created");
 }
 
 Session::~Session()
 {
-	std::cout << "---<<< session deleted" << std::endl;
 	if (sftp_ != NULL)
 	{
 		sftp_free(sftp_);
@@ -36,10 +35,28 @@ Session::~Session()
 		ssh_disconnect(session_);
 		ssh_free(session_);
 	}
+	logger_.log("<<< session destructed");
 }
+
+NotInitializedSession& Session::LogOut() 
+{	
+	sftp_free(sftp_);
+	sftp_ = NULL;
+	
+	ssh_disconnect(session_);
+
+	Connect(remote_host_, port_);
+
+	logger_.log(">> logged out");
+
+	return *this;
+};
 
 NotInitializedSession& Session::Connect(const std::string &host, int port)
 {
+	remote_host_ = host;
+	port_ = port;
+
 	session_ = ssh_new();
 
 	if (session_ == NULL)
@@ -52,7 +69,7 @@ NotInitializedSession& Session::Connect(const std::string &host, int port)
 
 	if (ssh_connect(session_) == SSH_OK)
 	{
-		std::cout << "[ok] successfully connected" << std::endl;
+		logger_.log("[ok] successfully connected");
 	}
 	else
 	{
@@ -64,9 +81,9 @@ NotInitializedSession& Session::Connect(const std::string &host, int port)
 
 InitializedSession& Session::Login(const std::string &login, const std::string &password)
 {
-	if (ssh_userauth_password(session_, NULL, password.c_str()) == SSH_AUTH_SUCCESS)
+	if (ssh_userauth_password(session_, login.c_str(), password.c_str()) == SSH_AUTH_SUCCESS)
 	{
-		std::cout << "[ok] successfully authorized" << std::endl;
+		logger_.log("[ok] successfully authorized");
 	}
 	else
 	{
@@ -95,12 +112,11 @@ InitializedSession& Session::CreateDir(const std::string &dir, int permissions)
 			if (rsp != SSH_OK)
 			{
 				if (sftp_get_error(sftp_) != SSH_FX_FILE_ALREADY_EXISTS)
-					std::cout << "[info] directory already exists: "
-					<< dir.substr(0, second_pos) << std::endl;
+					logger_.log("[info] directory already exists: " + dir.substr(0, second_pos));
 			}
 			else
 			{
-				std::cout << "[ok] folder created : " << dir.substr(0, second_pos) << std::endl;
+				logger_.log("[ok] folder created : " + dir.substr(0, second_pos));
 			}
 			first_pos = second_pos + 1;
 
@@ -144,9 +160,12 @@ InitializedSession& Session::SendFile(const std::string &source, const std::stri
 
 			if (written_bytes != local_file.gcount())
 				throw std::exception("cannot write to remote file");
-
-			for (int i = 0; i < local_file.gcount(); ++i) { std::cout << buffer[i]; } std::cout << std::endl;
 		}
+
+		logger_.log(
+			"data successfully written, last part of file: " + 
+			std::string(buffer.begin(), buffer.begin() + local_file.gcount())
+		);
 	}
 
 	local_file.close();
