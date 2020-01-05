@@ -103,38 +103,26 @@ InitializedSession& Session::Login(const std::string &login, const std::string &
 
 InitializedSession& Session::CreateDir(const std::string &dir, int permissions)
 {
-	InitSftp();
-
 	//std::replace(remote_file.begin(), remote_file.end(), '\\', '/');
+	InitSftp();
+	
+	std::size_t first_pos = 0, second_pos = 0;
 
-	std::size_t first_pos = 0, second_pos;
-
-	while (true)
+	while (second_pos != std::string::npos && first_pos != dir.size())
 	{
 		second_pos = dir.find("/", first_pos);
 
-		if (second_pos != std::string::npos || dir.substr(first_pos).size() > 0)
-		{
-			int rsp = sftp_mkdir(sftp_, dir.substr(0, second_pos).c_str(), permissions);
+		int rsp = sftp_mkdir(sftp_, dir.substr(0, second_pos).c_str(), permissions);
 
-			if (rsp != SSH_OK)
-			{
-				if (sftp_get_error(sftp_) != SSH_FX_FILE_ALREADY_EXISTS)
-					logger_->info("directory already exists: " + dir.substr(0, second_pos));
-			}
-			else
-			{
-				logger_->info("folder created : " + dir.substr(0, second_pos));
-			}
-			first_pos = second_pos + 1;
+		if (rsp != SSH_OK) {
+			if (sftp_get_error(sftp_) != SSH_FX_FILE_ALREADY_EXISTS)
+				logger_->info("directory already exists: " + dir.substr(0, second_pos));
+		}
+		else {
+			logger_->info("folder created : " + dir.substr(0, second_pos));
+		}
 
-			if (second_pos == std::string::npos)
-				break;
-		}
-		else
-		{
-			break;
-		}
+		first_pos = second_pos + 1;
 	}
 
 	return *this;
