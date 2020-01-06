@@ -50,22 +50,22 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		Ssh().SetLogger(logger_)
+		SshConnector().SetLogger(logger_)
 			.Connect(host, port)
-			.Login("sergey2", "root2")
+			.Login("user1", "root1")
 			.CreateDir(dir, perms)
 			.LogOut()
-			.Login("sergey3", "root3")
+			.Login("user2", "root2")
 			.SendFile(source, dest, access_type, perms);
 
 		// api usage sample 1
-		//Ssh().Connect(host, port)
+		//SshConnector().Connect(host, port)
 		//		.Login(login, passw)
 		//			.CreateDir(dir, perms)
 		//				.SendFile(source, dest, access_type, perms);
 
 		//// api usage sample 2
-		//Ssh ssh;
+		//SshConnector ssh;
 		//auto& session = ssh.Connect(host, port)
 		//	.Login(login, passw);
 		//

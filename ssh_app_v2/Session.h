@@ -6,13 +6,13 @@
 	#include "Session.h"
 		
  2.1 create session object and make chained calls to available functions
-	Ssh().Connect(host, port)
+	SshConnector().Connect(host, port)
 			.Login(login, passw)
 				.CreateDir(dir, perms)
 					.SendFile(source, dest, access_type, perms);
 
  2.2 initialize session object, connect to remote host, then use file transfer functions where you need
-	Ssh ssh;
+	SshConnector ssh;
 	auto& session = ssh.Connect(host, port).Login(login, passw);
 	...
 	for (auto& dir : dirs)
@@ -45,7 +45,7 @@
 class Session : NotInitializedSession, InitializedSession
 {
 public:
-	friend class Ssh;
+	friend class SshConnector;
 
 	virtual InitializedSession& Login(const std::string &login, const std::string &password) override;
 	virtual InitializedSession& CreateDir(const std::string &dir, int permissions) override;
@@ -60,14 +60,17 @@ public:
 	~Session();
 
 private:
+	Session() = default;
 	Session(std::shared_ptr<Logger> logger);
 	Session(const Session& sess) = default;
 	Session& operator=(const Session& sess) = default;
 
 	NotInitializedSession& Connect(const std::string &host, int port);
 	void InitSftp();
+	void ReleaseSftp();
+	void ReleaseSsh();
 	
-	ssh_session session_;
+	ssh_session ssh_session_;
 	sftp_session sftp_;
 	std::string remote_host_;
 	int port_;
@@ -75,20 +78,17 @@ private:
 };
 
 
-class Ssh
+class SshConnector
 {
 public:
-	Ssh();
-	~Ssh();
-	Ssh& SetLogger(std::shared_ptr<Logger> logger);
+	SshConnector();
+	~SshConnector();
+	SshConnector& SetLogger(std::shared_ptr<Logger> logger);
 	NotInitializedSession& Connect(const std::string &host, int port);
 
 private:
-	Session* session_;
+	Session* session_; 
 	std::shared_ptr<Logger> logger_;
 };
-
-
-
 
 #endif // SA_SESSION_H
