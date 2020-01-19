@@ -1,12 +1,24 @@
 /*
     estimation of Pi by Monte Carlo method
+    ---------------------------------------------------------------------------------------
     method -->
+    ---------------------------------------------------------------------------------------
     suppose we have a circle with unit radius inscribed in a quadrant
-    the ratio between randomly arranged points inside the circle and inside the quadrant (inside + outside the circle)
-    approaches to Pi
-    
-    in example only 1/4 part of circle is taken 
+    ---------------------------------------------------------------------------------------
+                  ^ y
+                  |                   -----------------------------------------------------
+            ******|******             the ratio
+            *   * | *   *             -----------------------------------------------------
+            * *   |   * *             between randomly arranged points inside the circle
+            * ____|_____* ____        -----------------------------------------------------
+            *     |0    1     x       and inside the quadrant (inside + outside the circle)
+            * *   |   * *             -----------------------------------------------------
+            *   * | *   *             approximates Pi
+            *************             -----------------------------------------------------
 
+    ---------------------------------------------------------------------------------------
+    in code sample only 1/4 part of circle is taken
+    ---------------------------------------------------------------------------------------
 */
 
 #include <iostream>
