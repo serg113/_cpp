@@ -29,7 +29,8 @@ int main()
     float x, y;
     int counter = 0;
 
-    for(int i = 0; i < 10000; ++i)
+    int points_count = 10000;
+    while(points_count --> 0)
     {
         x = (float)(rand()%100)/100;
         y = (float)(rand()%100)/100;
@@ -38,6 +39,6 @@ int main()
             ++counter;
     }
 
-    std::cout << (counter/10000.0)*4 << std::endl;
+    std::cout << "Pi ~= " << (counter/10000.0)*4 << std::endl;
 
 }
