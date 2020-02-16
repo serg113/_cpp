@@ -6,28 +6,17 @@
 #include "ArgParser.h"
 #include "Session.h"
 
+std::unique_ptr<ArgParser> get_parser(int argc, char* argv[], std::shared_ptr<Logger> logger);
+
 int main(int argc, char* argv[])
 {
-	std::shared_ptr<Logger> logger_ = std::make_shared<Logger>();
+	auto logger_ = std::make_shared<Logger>();
 
-	bool is_cmd_used = (argc > 1);
-
-	ArgParser parser(logger_);
-
-	if (is_cmd_used)
-	{
-		std::vector<std::string> arg_values;
-
-		for (int i = 1; i < argc; ++i)
-			arg_values.emplace_back(std::string(argv[i]));
-
-		if(!parser.ProcessArgs(arg_values))
-			return 0;
-	}
-
+	auto parser_ = get_parser(argc, argv, logger_);
+	
 	std::string host = "127.0.0.1";
 	int port = 8887;
-	std::string login = "not used";
+	std::string login = "admin";
 	std::string passw = "root";
 	
 	int access_type = O_WRONLY | O_CREAT | O_TRUNC; 
@@ -37,9 +26,9 @@ int main(int argc, char* argv[])
 	std::string source;
 	std::string dest;
 
-	if (is_cmd_used){
-		source = parser.get_source_path();
-		dest = parser.get_destination_path();
+	if (parser_){
+		source = parser_->get_source_path();
+		dest = parser_->get_destination_path();
 	} 
 	else {
 		source = "./test_file.dat";
@@ -50,30 +39,11 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		SshConnector().SetLogger(logger_)
-			.Connect(host, port)
-			.Login("user1", "root1")
-			.CreateDir(dir, perms)
-			.LogOut()
-			.Login("user2", "root2")
-			.SendFile(source, dest, access_type, perms);
-
-		// api usage sample 1
-		//SshConnector().Connect(host, port)
-		//		.Login(login, passw)
-		//			.CreateDir(dir, perms)
-		//				.SendFile(source, dest, access_type, perms);
-
-		//// api usage sample 2
-		//SshConnector ssh;
-		//auto& session = ssh.Connect(host, port)
-		//	.Login(login, passw);
-		//
-		//for (auto& dir : dirs)
-		//{
-		//	session.CreateDir(dir, perms);
-		//}
-		
+		CreateSession(logger_)
+			->Connect(host, port)
+				->Login("admin", "root")
+					->CreateDir(dir, perms) //->LogOut()->Login("user2", "pass2")
+						->SendFile(source, dest, access_type, perms);
 	}
 	catch (std::exception &ex)
 	{
@@ -84,4 +54,18 @@ int main(int argc, char* argv[])
 	std::cin.get();
 }
 
+std::unique_ptr<ArgParser> get_parser(int argc, char* argv[], std::shared_ptr<Logger> logger)
+{
+	auto parser = std::make_unique<ArgParser>(logger);
+
+	std::vector<std::string> arg_values;
+
+	for (int i = 1; i < argc; ++i)
+		arg_values.emplace_back(std::string(argv[i]));
+
+	if (!parser->ProcessArgs(arg_values))
+		return nullptr;
+
+	return parser;
+}
 
