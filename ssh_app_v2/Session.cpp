@@ -1,45 +1,29 @@
 #include "Session.h"
 
-// SshConnector 
-SshConnector::SshConnector() 
-	: session_(nullptr), logger_(std::make_shared<Logger>()) 
-{};
-
-SshConnector& SshConnector::SetLogger(std::shared_ptr<Logger> logger)
+// friend of Session
+UnConnectedSess_ CreateSession(std::shared_ptr<Logger> logger)
 {
-	logger_ = logger;
-	return *this;
+	std::shared_ptr<Session> sess(new Session(logger));
+	return sess;
 }
-
-SshConnector::~SshConnector()
-{
-	if(session_ != nullptr)
-		delete session_;
-}
-
-NotInitializedSession& SshConnector::Connect(const std::string &host, int port)
-{
-	session_ = new Session(logger_);
-	return session_->Connect(host, port);
-}
-// end SshConnector
 
 // Session
+Session::Session() : ssh_session_{ nullptr }, sftp_{ nullptr } { };
+
 Session::Session(std::shared_ptr<Logger> logger) : 
-	logger_(logger), ssh_session_(nullptr), sftp_(nullptr)
-{
+	logger_{ logger }, ssh_session_{ nullptr }, sftp_{ nullptr }
+{ 
 	logger_->info(">>> session constructed");
-}
+};
 
 Session::~Session()
 {
 	ReleaseSftp();
 	ReleaseSsh();
-	
-	logger_->info("<<< session destructed");
+	logger_->info(">>> session destructed");
 }
 
-NotInitializedSession& Session::LogOut() 
+UnInitedSess_ Session::LogOut()
 {	
 	ReleaseSftp();
 	
@@ -50,10 +34,10 @@ NotInitializedSession& Session::LogOut()
 	logger_->info(">> logged out and reconnected to :" 
 		+ remote_host_ + ":" + std::to_string(port_));
 
-	return *this;
+	return shared_from_this();
 };
 
-NotInitializedSession& Session::Connect(const std::string &host, int port)
+UnInitedSess_ Session::Connect(const std::string &host, int port)
 {
 	remote_host_ = host;
 	port_ = port;
@@ -75,10 +59,10 @@ NotInitializedSession& Session::Connect(const std::string &host, int port)
 	
 	logger_->info("successfully connected");
 
-	return *this;
+	return shared_from_this();
 }
 
-InitializedSession& Session::Login(const std::string &login, const std::string &password)
+InitedSess_ Session::Login(const std::string &login, const std::string &password)
 {
 	if (ssh_userauth_password(ssh_session_, login.c_str(), password.c_str()) != SSH_AUTH_SUCCESS) {
 		throw std::exception("cannot authorize session");
@@ -86,10 +70,10 @@ InitializedSession& Session::Login(const std::string &login, const std::string &
 	
 	logger_->info("successfully authorized");
 
-	return *this;
+	return shared_from_this();
 }
 
-InitializedSession& Session::CreateDir(const std::string &dir, int permissions)
+InitedSess_ Session::CreateDir(const std::string &dir, int permissions)
 {
 	//std::replace(remote_file.begin(), remote_file.end(), '\\', '/');
 	InitSftp();
@@ -113,10 +97,10 @@ InitializedSession& Session::CreateDir(const std::string &dir, int permissions)
 		first_pos = second_pos + 1;
 	}
 
-	return *this;
+	return shared_from_this();
 }
 
-InitializedSession& Session::SendFile(const std::string &source, const std::string &destination, int access_type, int permissions, bool create_dir)
+InitedSess_ Session::SendFile(const std::string &source, const std::string &destination, int access_type, int permissions, bool create_dir)
 {
 	InitSftp();
 
@@ -158,7 +142,7 @@ InitializedSession& Session::SendFile(const std::string &source, const std::stri
 	local_file.close();
 	sftp_close(remote_file);
 
-	return *this;
+	return shared_from_this();
 }
 
 void Session::InitSftp()
