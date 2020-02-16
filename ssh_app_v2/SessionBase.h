@@ -18,11 +18,11 @@ public:
 	virtual InitedSess_ CreateDir(const std::string &dir, int permissions) = 0;
 
 	virtual InitedSess_ SendFile(const std::string &source,
-									const std::string &destination,
-										int access_type,
-											int permissions,
-												bool create_dir = false
-													) = 0;
+					const std::string &destination,
+						int access_type,
+							int permissions,
+								bool create_dir = false
+									) = 0;
 	virtual UnInitedSess_ LogOut() = 0;
 };
 
