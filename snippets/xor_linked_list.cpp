@@ -1,46 +1,44 @@
 #include <iostream>
 #include <string>
+#include <memory>
 
-// node.h
-class Node
+struct Node
 {
-public:
-    friend class NodeList;
     Node(std::string&& name);
     std::string name_;
-
-private:
     size_t xor_value_;
 };
 
-Node::Node(std::string&& name): name_(name), xor_value_(0) {};
+Node::Node(std::string&& name): name_(std::move(name)), xor_value_(0) {};
 
 
-// nodelist.h
-class NodeList
+class NodeList;
+
+using ListPtr = std::shared_ptr<NodeList>;
+
+class NodeList: public std::enable_shared_from_this<NodeList>
 {
 public:
     NodeList();
-    NodeList& Create(std::string&& name);
-    NodeList& Add(Node* node);
-    Node& Get(int index);
+    ListPtr Create(std::string&& name);
+    ListPtr Add(Node* node);
+    Node* Get(int index);
 
 private:
     Node* root_;
-    Node* count_xor(size_t val, Node* node);
 };
 
-//nodelist.cpp
+
 NodeList::NodeList(): root_(nullptr){};
 
-NodeList& NodeList::Create(std::string&& name)
+ListPtr NodeList::Create(std::string&& name)
 {
     root_ = new Node(std::move(name));
-    return *this;
+    return shared_from_this();
 }
 
-NodeList& NodeList::Add(Node* node)
-{//if(root_ == nullptr) throw exception;
+ListPtr NodeList::Add(Node* node)
+{
     Node* it_node = root_;
     while(true)
     {
@@ -54,13 +52,13 @@ NodeList& NodeList::Add(Node* node)
             break;
         }
     }
-    return *this;
+    return shared_from_this();
 }
 
-Node& NodeList::Get(int index)
-{//if(root_ == nullptr) throw exception;
+Node* NodeList::Get(int index)
+{
     if(index == 0)
-        return *root_;
+        return root_;
 
     Node* it_node = root_;
 
@@ -68,10 +66,10 @@ Node& NodeList::Get(int index)
     {//if(it_node->xor_ == 0) throw out of range exception;
         it_node = (Node*)(it_node->xor_value_ ^ ((size_t)it_node));
     }
-    return *it_node;
+    return it_node;
 }
 
-Node* NodeList::count_xor(size_t val, Node* node)
+Node* count_xor(size_t val, Node* node)
 {
     size_t node_rp = reinterpret_cast<size_t>(node);
 
@@ -81,15 +79,16 @@ Node* NodeList::count_xor(size_t val, Node* node)
 
 int main()
 {
-    NodeList nodes = NodeList().Create("root");
+    auto nodes = std::make_shared<NodeList>();
 
-    nodes.Add(new Node("n1"))
-                .Add(new Node("n2"))
-                    .Add(new Node("n3"));
+    nodes->Create("root")
+            ->Add(new Node("n1"))
+                ->Add(new Node("n2"))
+                    ->Add(new Node("n3"));
 
-    std::cout <<"get(0).name_ = " << nodes.Get(0).name_ << std::endl;
-    std::cout <<"get(1).name_ = " << nodes.Get(1).name_ << std::endl;
-    std::cout <<"get(2).name_ = " << nodes.Get(2).name_ << std::endl;
+    std::cout <<"get(0).name_ = " << nodes->Get(0)->name_ << std::endl;
+    std::cout <<"get(1).name_ = " << nodes->Get(1)->name_ << std::endl;
+    std::cout <<"get(2).name_ = " << nodes->Get(2)->name_ << std::endl;
 
     return 0;
 }
