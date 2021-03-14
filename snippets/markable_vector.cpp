@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <typeinfo>
+
+
 
 class IMarkable
 {
@@ -9,41 +12,33 @@ public:
 
 class ProxyVal 
 {
-private:
-	int proxyVal_;
-	int index_;
-	IMarkable* objectToMark_;
-  
+
 public:
 	ProxyVal(IMarkable* markable, int val, int index) 
-		: objectToMark_(markable), proxyVal_(val), index_(index) {};
+		: objectToMark_(markable), proxyVal_(val), index_(index) 
+	{
+	
+	};
 
-	void operator=(const int& value) {
+	void operator=(const int& value) 
+	{
 		proxyVal_ = value;
 		objectToMark_->mark(value, index_);
 	}
 
-	operator int() {
+	operator int() 
+	{
 		return proxyVal_;
 	}
 	
+private:
+	int proxyVal_;
+	int index_;
+	IMarkable* objectToMark_;
 };
 
 class MarkableVector : IMarkable
 {
-private:
-	struct MarkableValue
-  {
-		int val;
-		bool isMarked;
-		MarkableValue(int value, bool marked)
-       : val(value), isMarked(marked) {}; 
-	};
-
-private:
-	ProxyVal proxyVal_;
-	std::vector<MarkableValue> data_;
-
 public:
 	MarkableVector() {};
 
@@ -52,16 +47,31 @@ public:
 		data_.push_back(MarkableValue(val, (val%2 == 0)));
 	}
 
+public: // interface implementation
 	void mark(int value, int index) override
 	{
 		data_[index].val = value;
 		data_[index].isMarked = (value % 2 == 0);
 	}
 
+public: // overloaded operators
 	ProxyVal operator[](std::size_t index)
 	{
 		return ProxyVal(this, data_[index].val, index); 
 	}
+
+private:
+	struct MarkableValue
+	{
+		MarkableValue(int value, bool marked): val(value), isMarked(marked) {}; 
+		int val;
+		bool isMarked;
+	};
+
+
+private:
+	std::vector<MarkableValue> data_;
+
 };
 
 
@@ -84,6 +94,7 @@ int main()
 
 	std::cout << "the same integer after assignment to 10 is equal to " << vec[0] << std::endl;
 
+	std::cout << typeid(c).name() << std::endl;
 }
 
 
